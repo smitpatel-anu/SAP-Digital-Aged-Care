@@ -22,7 +22,6 @@ Further functions include:
 * Alan Bradbury - Strategic Initiatives
 
 ## Team Member
-
 * Smit Patel (u6839284@anu.edu.au)
 * Hala Alsouly (u5995105@anu.edu.au)
 * Yuzhao Li (u6724153@anu.edu.au)
@@ -30,4 +29,8 @@ Further functions include:
 * Yikai Sun (u6444614@anu.edu.au)
 * Jinpei Chen (u6743886@anu.edu.au)
 * Ning Cai (u6456964@anu.edu.au)
-* 
+
+## Identification of Resources
+
+
+## Risks, Potential Costs
