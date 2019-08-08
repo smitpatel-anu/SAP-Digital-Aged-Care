@@ -15,6 +15,7 @@
 
 ### [Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_1.md)
 
+## Resources
 ### [Google Drive](https://drive.google.com/drive/folders/1zLu37xGUlXDpCMVbtRykj2TJwudNY8HX?usp=sharing)
 
 ### [Trello board](https://trello.com/b/QgPn0RdV/sap-digital-aged-care)
