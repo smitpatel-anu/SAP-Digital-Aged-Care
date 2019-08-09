@@ -31,7 +31,9 @@
 * Cathy McGurk - Executive Manager
 * Alan Bradbury - Strategic Initiatives
 
-
+## Statement of Work
+* A draft of the Statement of Work document prepared by team members is available [here](https://docs.google.com/document/d/1EQXTvbllQohvQxRmt6kTLMxnqgFR5qrLN83I9oHH72s/edit?usp=sharing)
+* The client will be preparing a Statement of Work independently with additional information as discussed in a previous [meeting](https://drive.google.com/open?id=1RhMwgnwSnsN3cFKq1MBUeDXbxyeNDqcR)
 
 ## Development plan, schedule
 * 10-week timeframe, beginning week 3 of the semester
@@ -69,3 +71,4 @@
 * Communication issues due to a global team (members in Ireland, India, Australia)
 * Getting access to SAP GitHub repository
 * Licensing and approvals for third-party libraries (for OCR, cloud storage SDKs, etc.)
+* [Risk register](https://docs.google.com/spreadsheets/d/1bk8ooR6tqfAQXfUt8OAQKlaZAj1Er4ufeNuLKyR5vz0/edit?usp=sharing)
