@@ -35,9 +35,9 @@
 
 ## Development plan, schedule
 * 10-week timeframe, beginning week 3 of the semester
-    *Weeks 3 and 4 (2 weeks) - IP agreement and NDA, Statement of Work, requirements/user-stories, architecture/design, SAP’s private GitHub repo and environment setup
-    *Weeks 5 to 10 (6 weeks) - development phase, prototyping
-    *Weeks 11 and 12 (2 weeks) - unit, integration, and manual testing
+    * Weeks 3 and 4 (2 weeks) - IP agreement and NDA, Statement of Work, requirements/user-stories, architecture/design, SAP’s private GitHub repo and environment setup
+    * Weeks 5 to 10 (6 weeks) - development phase, prototyping
+    * Weeks 11 and 12 (2 weeks) - unit, integration, and manual testing
 * 2-week sprints managed by the client (Simon Grace) and Yuzhao Li
 * Weekly conference calls with Simon to report progress, review/revise requirements, and discuss issues
 * Deliverables: Android Wear app 2.0, “Where’s that document?” chatbot app (proof of concept), detailed architecture and code documentation
