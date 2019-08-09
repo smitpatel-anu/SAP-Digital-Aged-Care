@@ -15,14 +15,14 @@
 ‘Active’ Telemonitoring Pilot: Enabling Aged Care providers to monitor and respond to the health, activity, and requests of senior clients living independently in their homes. Using artificial intelligence on data from sensors, devices, and other applications to predict risk, mobilise the care team, and give visibility to the family.
 ## Overview of our two apps
 * Android Wear app 2.0: Wearables can help understand a person’s wellbeing, predict health risks and detect falls. We need to supercharge our capabilities on the wearable device to collect and process the right data, whilst proving a great user experience. Primary features of the Android Wear app:
-*** Sending data without a phone (using 4G) i.e. standalone app
-*** GPS location tracking
-*** Parkinson tremor monitoring
-*** Improvements to device battery life
-*** Fall detection
+ * Sending data without a phone (using 4G) i.e. standalone app
+ * GPS location tracking
+ * Parkinson tremor monitoring
+ * Improvements to device battery life
+ * Fall detection
 * “Where’s that document?” chatbot mini-app: Most elderly people do not use email. They receive countless documents via mail and generally can’t remember the vast amount of information they need to get by independently. We need to build a PoC app that can take a photo of a document and then:  
-*** Use off the shelf OCR to scan and analyse the text and determine key information Use a cloud storage to store documents and text records
-*** Use SAP Conversational AI (Chatbot tool) for an elderly person to ask the app “what’s my insurance number?” for example
+ * Use off the shelf OCR to scan and analyse the text and determine key information Use a cloud storage to store documents and text records
+ * Use SAP Conversational AI (Chatbot tool) for an elderly person to ask the app “what’s my insurance number?” for example
 
 ## Stakeholders
 * Simon Grace - Team leader
