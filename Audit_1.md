@@ -25,11 +25,11 @@
      * Use SAP Conversational AI (Chatbot tool) for an elderly person to ask the app “what’s my insurance number?” for example
 
 ## Stakeholders
-* Simon Grace - Team leader
-* Abhinav Singhal - Founder and Venture Lead
-* Leon Ren - Head of Design and Engineering
-* Cathy McGurk - Executive Manager
-* Alan Bradbury - Strategic Initiatives
+* Simon Grace - Team leader (leads the digital aged care project at SAP)
+* Abhinav Singhal - Founder and Venture Lead (works with Simon on digital aged care)
+* Leon Ren - Head of Design and Engineering (manages software development, administers GitHub and JIRA)
+* Cathy McGurk - Executive Manager (manages ANU's engagement with SAP)
+* Alan Bradbury - Strategic Initiatives (works with various internal projects at SAP)
 
 ## Statement of Work
 * A draft of the Statement of Work document prepared by team members is available [here](https://docs.google.com/document/d/1EQXTvbllQohvQxRmt6kTLMxnqgFR5qrLN83I9oHH72s/edit?usp=sharing)
