@@ -2,25 +2,6 @@
 
 ## SAP Digital Aged Care
 
-Digital Aged Care is now an innovation platform for aged care providers to help people continue living independently in their homes. We use artificial intelligence on data from sensors, devices and other applications to predict risk, mobilise the care team and give visibility to the family.
-We are working with support from the office of the Federal Minister of Aged Care, Google, Samsung and Apple to make this a reality. And, pilots are beginning in Queensland, Fukushima Japan and Bangalore India.
-
-The Android Wear app will be able to collect data from the Samsung Galaxy Watch via Samsung Health, including Heart Rate, Steps and Sleep. Now, after our learnings, we want to build more intuitive capability on an android wear device, such as a fossil watch.
-Features developed for this project include:
-* Sending data without a phone (4g)
-* Parkinson tremor monitoring
-* GPS location tracking
-* Improved battery life
-* Detect new data
-* Fall Detection
-
-## Stakeholders
-* Simon Grace - Team leader
-* Abhinav Singhal - Founder and Venture Lead
-* Leon Ren - Head of Design and Engineering
-* Cathy McGurk - Executive Manager
-* Alan Bradbury - Strategic Initiatives
-
 ## Team Members
 * Smit Patel (u6839284@anu.edu.au)
 * Hala Alsouly (u5995105@anu.edu.au)
@@ -29,6 +10,28 @@ Features developed for this project include:
 * Yikai Sun (u6444614@anu.edu.au)
 * Jinpei Chen (u6743886@anu.edu.au)
 * Ning Cai (u6456964@anu.edu.au)
+
+## Challenge and Story
+‘Active’ Telemonitoring Pilot: Enabling Aged Care providers to monitor and respond to the health, activity, and requests of senior clients living independently in their homes. Using artificial intelligence on data from sensors, devices, and other applications to predict risk, mobilise the care team, and give visibility to the family.
+## Overview of our two apps
+* Android Wear app 2.0: Wearables can help understand a person’s wellbeing, predict health risks and detect falls. We need to supercharge our capabilities on the wearable device to collect and process the right data, whilst proving a great user experience. Primary features of the Android Wear app:
+*** Sending data without a phone (using 4G) i.e. standalone app
+*** GPS location tracking
+*** Parkinson tremor monitoring
+*** Improvements to device battery life
+*** Fall detection
+* “Where’s that document?” chatbot mini-app: Most elderly people do not use email. They receive countless documents via mail and generally can’t remember the vast amount of information they need to get by independently. We need to build a PoC app that can take a photo of a document and then:  
+*** Use off the shelf OCR to scan and analyse the text and determine key information Use a cloud storage to store documents and text records
+*** Use SAP Conversational AI (Chatbot tool) for an elderly person to ask the app “what’s my insurance number?” for example
+
+## Stakeholders
+* Simon Grace - Team leader
+* Abhinav Singhal - Founder and Venture Lead
+* Leon Ren - Head of Design and Engineering
+* Cathy McGurk - Executive Manager
+* Alan Bradbury - Strategic Initiatives
+
+
 
 ## Development plan, schedule
 * 10-week timeframe, beginning week 3 of the semester
