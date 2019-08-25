@@ -15,6 +15,7 @@
 
 ## Audits Page
 ### [Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_1.md)
+### [Audit 2](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/3bcec5260226916ed6b2ab78574b1356197d9008/Audit_2.md)
 
 ## Resources
 ### [Google Drive](https://drive.google.com/drive/folders/1zLu37xGUlXDpCMVbtRykj2TJwudNY8HX?usp=sharing)
