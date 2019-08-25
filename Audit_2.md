@@ -1,16 +1,17 @@
-# Audit 1
+# Audit 2
 
 ## SAP Digital Aged Care
 
 ## Team Roles
 |Name|Roles|
-|Smit|Project Manager|
-|Yuzhao Li|Scrum Master|
-|Jinpei Chen||
-|Hala||
-|Yikai Sun||
-|Ning Cai||
-|Ziang Xu||
+|Smit|...|
+|Yuzhao Li|...|
+|Jinpei Chen|...|
+|Hala|...|
+|Yikai Sun|...|
+|Ning Cai|...|
+|Ziang Xu|...|
+\begin{tabular}{ l c r } 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \\ \end{tabular}
 
 ## Challenge and Story
 
