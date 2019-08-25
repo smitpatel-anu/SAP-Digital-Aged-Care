@@ -5,15 +5,13 @@
 ## Team Roles
 |Name|Roles|
 |---|---|
-|Smit|...|
-|Yuzhao Li|...|
-|Jinpei Chen|...|
-|Hala|...|
-|Yikai Sun|...|
-|Ning Cai|...|
-|Ziang Xu|...|
-
-## Challenge and Story
+|Smit Patel|Project Management, Documentation, Android development (Parkinson’s tremor monitoring)|
+|Yuzhao Li|Scrum Master, Android development (Fall detection)|
+|Jinpei Chen|Documentation, Android development (Fall detection)|
+|Hala Alsouly|Android development (GPS location tracking)|
+|Yikai Sun|Android development (Parkinson’s tremor monitoring)|
+|Ning Cai|Android development (Parkinson’s tremor monitoring)|
+|Ziang Xu|Android development (GPS location tracking)|
 
 ## Wearable App 2.0 Features
 * Fall Detection
