@@ -1,8 +1,10 @@
 # Audit 2
 
-## SAP Digital Aged Care
+### Acceptance Criteria and Statement of Work
+* [Acceptance Criteria](https://drive.google.com/open?id=1u6_ezL9gLnCAceMZLRHxKecSzCjUizi3GH86wbROZ10)
+* [Statement of Work](https://drive.google.com/open?id=1qmkpxLGy7XbPFNeykDpAxav1XH-hKlEf)
 
-## Team Roles
+### Roles
 |Name|Roles|
 |---|---|
 |Smit Patel|Project Management, Documentation, Android development (Parkinson’s tremor monitoring)|
@@ -13,21 +15,22 @@
 |Ning Cai|Android development (Parkinson’s tremor monitoring)|
 |Ziang Xu|Android development (GPS location tracking)|
 
-## Wearable App 2.0 Features
-* Fall Detection
-* Parkinson's tremor monitoring
-* GPS location
+### Progress
+* [Development Roadmap](https://drive.google.com/open?id=1T6WtVqKxvKTja76pd1EOpDqOvhP8A_4YoPSPdNXtWqo)
+* [Trello board](https://trello.com/b/QgPn0RdV/sap-digital-aged-care)
 
-## Stakeholders
+### Android Wear 2.0 Telemonitoring App features
+* [Fall Detection](https://drive.google.com/open?id=1uCqezd6Op9_BcIkDDx78CHnby9en9uyaOt0ThNnUSTc)
+* [Parkinson's tremor monitoring](https://drive.google.com/open?id=1UVKL3cOHz2bIedWh0y2Iww6C2Y7X3mVFFbCjKFUjRBU)
+* [GPS location](https://drive.google.com/open?id=1dx4ZgbrnQMIsemzoA0VGNuMrQaK4yl-sSmd26wOBvZc)
 
-## Statement of Work
+### App Architecture
+* [Architecture overview](https://drive.google.com/open?id=1Fp16HSDnKQzzcrNn2N5YnzRssOPQ4rwttXMwr7gIfZk)
 
-## Development plan, schedule
+### Decisions
+* [Decision Log](https://drive.google.com/open?id=1GgakHMr-wJEKVvv7Iuci2-5fsUiThBuixRfl0rfiJfA)
 
-## Deliverables
-
-## Communication
-
-## Resources
-
-## Risks, Potential Costs
+### Documentation
+* [Risk Register](https://drive.google.com/open?id=1bk8ooR6tqfAQXfUt8OAQKlaZAj1Er4ufeNuLKyR5vz0)
+* [Stakeholder analysis](https://drive.google.com/open?id=1xcZRBAM8WKJzAdR3uYg2QqyHmTnkFkIPEhA69GL9Yo0)
+* [Meeting minutes](https://drive.google.com/open?id=11evwQQox0HokLOHvzK9xxJHQXPrv0oF9)
