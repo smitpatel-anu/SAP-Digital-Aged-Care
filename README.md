@@ -11,10 +11,11 @@
 
 ### Clients:
 * Simon Grace (simon.grace@sap.com)
-* Alan Bradbury (alan.bradbury@sap.com)
+* [Stakeholders](https://drive.google.com/open?id=1xcZRBAM8WKJzAdR3uYg2QqyHmTnkFkIPEhA69GL9Yo0)
 
 ## Audits Page
 ### [Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_1.md)
+### [Audit 2](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_2.md)
 
 ## Resources
 ### [Google Drive](https://drive.google.com/drive/folders/1zLu37xGUlXDpCMVbtRykj2TJwudNY8HX?usp=sharing)
