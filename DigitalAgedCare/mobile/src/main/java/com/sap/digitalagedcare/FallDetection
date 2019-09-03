@@ -1,0 +1,71 @@
+/**
+ * Fall detection feature
+ *
+ * Author: Jinpei Chen
+ *         Yuzhao Li
+ *
+ * Date:   02/09/2019
+ */
+package com.example.falldeteciton;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
+import java.text.DecimalFormat;
+
+public class FallDetectionActivity extends AppCompatActivity implements SensorEventListener {
+
+    private SensorManager mySensorManager;
+    private Sensor myAccelerometer;
+    private Sensor myGyroscope;
+
+
+    /* Call when the activity is first created */
+    @Override
+    public void onCreate(Bundle savedInstance){
+        super.onCreate(savedInstance);
+        setContentView(R.layout.activity_falldetection);
+
+    }
+
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // not in use
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+}
