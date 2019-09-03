@@ -32,6 +32,13 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
     private Sensor myAccelerometer;
     private Sensor myGyroscope;
 
+    private final static String TAG = FallDetectionActivity.class.getSimpleName();
+    private TextView xAcc, yAcc, zAcc, tAcc;
+    private TextView xGyro, yGyro, zGyro, tGyro;
+
+    private LineChart myChart;
+    private Thread thread;
+    private boolean plotData = true;
 
     /* Call when the activity is first created */
     @Override
@@ -39,11 +46,61 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_falldetection);
 
+        // get an instance of the SensorManager
+        Log.d(TAG, "onCreate: Initializing sensor service.");
+        mySensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        // get an instance of the Accelerometer and Gyroscope
+        Log.d(TAG, "onCreate: Initializing accelerometer.");
+        myAccelerometer = mySensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Log.d(TAG, "onCreate: Initializing gyroscope.");
+        myGyroscope = mySensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+
+        // register the sensor listener
+        mySensorManager.registerListener(FallDetectionActivity.this, myAccelerometer, mySensorManager.SENSOR_DELAY_NORMAL);
+        Log.d(TAG, "onCreate: Accelerometer listener is registered.");
+        mySensorManager.registerListener(FallDetectionActivity.this, myGyroscope, mySensorManager.SENSOR_DELAY_NORMAL);
+        Log.d(TAG, "onCreate: Gyroscope listener is registered.");
+
     }
 
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        float acc = 0f;
+        float gyro = 0f;
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            Log.d(TAG, "onSensorChanged: ||| X:" + event.values[0] + ", Y:" + event.values[1] + ", Z:" + event.values[2]);
+            DecimalFormat df = new DecimalFormat("#.#");
+            float xA = Float.valueOf(df.format(event.values[0]));
+            float yA = Float.valueOf(df.format(event.values[1]));
+            float zA = Float.valueOf(df.format(event.values[2]));
+            acc = Float.valueOf(df.format((float) Math.sqrt(xA*xA + yA*yA + zA*zA)));
+
+            xAcc.setText("X: " + xA);
+            yAcc.setText("Y: " + yA);
+            zAcc.setText("Z: " + zA);
+            tAcc.setText("Acc: " + acc);
+
+            // free fall event
+            if (acc<1f) {
+                beep();
+                Toast.makeText(FallDetectionActivity.this, R.string.freefall,Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            Log.d(TAG, "onSensorChanged: ||| X:" + event.values[0] + ", Y:" + event.values[1] + ", Z:" + event.values[2]);
+            DecimalFormat df = new DecimalFormat("#.#");
+            float xG = Float.valueOf(df.format(event.values[0]));
+            float yG = Float.valueOf(df.format(event.values[1]));
+            float zG = Float.valueOf(df.format(event.values[2]));
+            gyro = Float.valueOf(df.format((float) Math.sqrt(xG*xG + yG*yG + zG*zG)));
+
+            xGyro.setText("X: " + xG);
+            yGyro.setText("Y: " + yG);
+            zGyro.setText("Z: " + zG);
+            tGyro.setText("Gyro: " + gyro);
+        }
 
     }
 
@@ -55,17 +112,28 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
 
     @Override
     protected void onDestroy() {
+        mySensorManager.unregisterListener(FallDetectionActivity.this);
+        thread.interrupt();
         super.onDestroy();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
+        mySensorManager.registerListener(this, myAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (thread != null){
+            thread.interrupt();
+        }
+        mySensorManager.unregisterListener(this);
     }
 
+    protected void beep(){
+        ToneGenerator toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+        toneGen.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+    }
 }
