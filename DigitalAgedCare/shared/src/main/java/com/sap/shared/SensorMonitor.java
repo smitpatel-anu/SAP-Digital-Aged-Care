@@ -13,18 +13,20 @@ import android.util.Log;
 import java.util.Arrays;
 
 import static android.hardware.Sensor.TYPE_ACCELEROMETER;
+import static android.hardware.Sensor.TYPE_GYROSCOPE;
 
 public class SensorMonitor implements SensorEventListener {
     private static final String LOG_TAG = "SensorMonitor";
     private final SensorManager sensorManager;
     private final Sensor sensorAccelerometer;
+    private final Sensor sensorGyroscope;
 
     /**
      * SensorMonitor constructor
      *
      * Registers a listener for the following sensors:
      * 1. Accelerometer
-     * 2. ...
+     * 2. Gyroscope
      * @param appContext the app context
      * @throws NullContextException thrown when the app context is null
      */
@@ -39,7 +41,10 @@ public class SensorMonitor implements SensorEventListener {
         }
 
         sensorAccelerometer = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
+        sensorGyroscope = sensorManager.getDefaultSensor(TYPE_GYROSCOPE);
+
         sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
 
@@ -53,7 +58,7 @@ public class SensorMonitor implements SensorEventListener {
             return;
         }
 
-        Log.d(LOG_TAG, "new SensorEvent");
+        Log.d(LOG_TAG, "New SensorEvent");
         Log.d(LOG_TAG, "timestamp: " + event.timestamp);
         Log.d(LOG_TAG, "accuracy: " + event.accuracy);
         Log.d(LOG_TAG, "sensor: " + event.sensor);
@@ -61,7 +66,7 @@ public class SensorMonitor implements SensorEventListener {
     }
 
     /**
-     * 
+     *
      * @param sensor
      * @param accuracy
      */
