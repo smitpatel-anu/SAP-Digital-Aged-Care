@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.sap.shared;
 
 import android.content.Context;
@@ -15,43 +12,47 @@ import java.util.Arrays;
 import static android.hardware.Sensor.TYPE_ACCELEROMETER;
 import static android.hardware.Sensor.TYPE_GYROSCOPE;
 
-public class SensorMonitor implements SensorEventListener {
-    private static final String LOG_TAG = "SensorMonitor";
+public class TremorMonitor implements SensorEventListener {
+    private static final String LOG_TAG = "TremorMonitor";
     private final SensorManager sensorManager;
     private final Sensor sensorAccelerometer;
     private final Sensor sensorGyroscope;
 
-    /**
-     * SensorMonitor constructor
-     *
-     * Registers a listener for the following sensors:
-     * 1. Accelerometer
-     * 2. Gyroscope
-     * @param appContext the app context
-     * @throws NullContextException thrown when the app context is null
-     */
-    public SensorMonitor(Context appContext) throws NullContextException, NullSensorManagerException {
-        if(appContext == null) {
+    private static TremorMonitor instance = null;
+
+    private TremorMonitor(Context appContext) throws NullContextException, NullSensorManagerException {
+        if (appContext == null) {
             throw new NullContextException();
         }
 
         sensorManager = (SensorManager) appContext.getSystemService(Context.SENSOR_SERVICE);
-        if(sensorManager == null) {
+        if (sensorManager == null) {
             throw new NullSensorManagerException();
         }
 
         sensorAccelerometer = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
         sensorGyroscope = sensorManager.getDefaultSensor(TYPE_GYROSCOPE);
+    }
 
+    // static method to create instance of Singleton class
+    public static TremorMonitor getInstance(Context appContext) throws NullContextException, NullSensorManagerException {
+        if (instance == null) {
+            instance = new TremorMonitor(appContext);
+        }
+
+        return instance;
+    }
+
+    public void start() {
         sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
+    public void stop() {
+        sensorManager.unregisterListener(this, sensorAccelerometer);
+        sensorManager.unregisterListener(this, sensorGyroscope);
+    }
 
-    /**
-     *
-     * @param event
-     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event == null) {
@@ -65,11 +66,6 @@ public class SensorMonitor implements SensorEventListener {
         Log.d(LOG_TAG, "values: " + Arrays.toString(event.values));
     }
 
-    /**
-     *
-     * @param sensor
-     * @param accuracy
-     */
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         Log.d(LOG_TAG, "Sensor accuracy changed");
