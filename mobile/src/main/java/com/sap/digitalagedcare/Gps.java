@@ -56,6 +56,12 @@ public class Gps {
                 null /* Looper */);
     }
 
+    public void stopLocationUpdate() {
+        if (mFusedLocationClient != null) {
+            mFusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
     protected void createLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(1000);
