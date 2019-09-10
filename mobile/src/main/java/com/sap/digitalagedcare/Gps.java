@@ -38,5 +38,12 @@ public class Gps {
                 });
     }
 
+    public double getLatitude(){
+        return lastLatitude;
+    }
+
+    public double getLongitude(){
+        return lastLongitude;
+    }
 
 }
