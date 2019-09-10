@@ -5,9 +5,13 @@ import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.List;
 
 public class Gps {
 
@@ -45,5 +49,36 @@ public class Gps {
     public double getLongitude(){
         return lastLongitude;
     }
+
+    public void startLocationUpdates() {
+        mFusedLocationClient.requestLocationUpdates(locationRequest,
+                locationCallback,
+                null /* Looper */);
+    }
+
+    protected void createLocationRequest() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(100);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    //This variable idea from https://stackoverflow.com/questions/44992014/how-to-get-current-location-in-googlemap-using-fusedlocationproviderclient
+
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            List<Location> locationList = locationResult.getLocations();
+            if (locationList.size() > 0) {
+                //The last location in the list is the newest
+                Location location = locationList.get(locationList.size() - 1);
+                Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                //mLastLocation = location;
+                lastLatitude=location.getLatitude();
+                lastLongitude= location.getLongitude();
+            }
+        }
+    };
+
 
 }
