@@ -17,6 +17,12 @@
 ### [Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_1.md)
 ### [Audit 2](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_2.md)
 
+## Features repo
+### [Fall Detection](https://github.com/ginpie/Fall-Detection)
+### [Fall Detection using Machine Learning](https://github.com/ginpie/FallDetectionML)
+### [Parkinson's Tremor Monitoring](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/tree/master/DigitalAgedCare/shared/src/main/java/com/sap/shared)
+### [GPS Location](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/tree/master/DigitalAgedCare/shared/src/main/java/com/sap/shared)
+
 ## Resources
 ### [Google Drive](https://drive.google.com/drive/folders/1zLu37xGUlXDpCMVbtRykj2TJwudNY8HX?usp=sharing)
 
