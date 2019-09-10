@@ -21,10 +21,19 @@ public class Gps {
     private double lastLatitude;
     private double lastLongitude;
 
+    /**
+     * Initialization
+     * @param context
+     */
     public Gps(Context context){
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
+
+    /**
+     *Get last location using FusedLocationProviderClient and initialize lastLatitude and
+     * lastLongitude if it is not null
+     */
     public void getLastLocation(){
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener( new OnSuccessListener<Location>() {
@@ -42,26 +51,41 @@ public class Gps {
                 });
     }
 
+    /**
+     * @return Location latitude
+     */
     public double getLatitude(){
         return lastLatitude;
     }
 
+    /**
+     * @return Location longitude
+     */
     public double getLongitude(){
         return lastLongitude;
     }
 
+    /**
+     * The location wil continue to be updating according to the location request time
+     */
     public void startLocationUpdates() {
         mFusedLocationClient.requestLocationUpdates(locationRequest,
                 locationCallback,
                 null /* Looper */);
     }
 
+    /**
+     * The location wil stop updating
+     */
     public void stopLocationUpdate() {
         if (mFusedLocationClient != null) {
             mFusedLocationClient.removeLocationUpdates(locationCallback);
         }
     }
 
+    /**
+     * Assign the location request settings
+     */
     protected void createLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(1000);
@@ -69,7 +93,7 @@ public class Gps {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    //This variable idea from https://stackoverflow.com/questions/44992014/how-to-get-current-location-in-googlemap-using-fusedlocationproviderclient
+    //The locationCallback idea from https://stackoverflow.com/questions/44992014/how-to-get-current-location-in-googlemap-using-fusedlocationproviderclient
 
     LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -78,13 +102,12 @@ public class Gps {
             if (locationList.size() > 0) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                Log.i(TAG, "Location: " + location.getLatitude() + " " + location.getLongitude());
                 //mLastLocation = location;
                 lastLatitude=location.getLatitude();
                 lastLongitude= location.getLongitude();
             }
         }
     };
-
 
 }
