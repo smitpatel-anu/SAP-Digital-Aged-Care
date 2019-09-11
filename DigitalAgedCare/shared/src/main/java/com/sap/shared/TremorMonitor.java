@@ -108,7 +108,9 @@ public class TremorMonitor implements SensorEventListener {
         double zDominantFrequency = getDominantFrequency(zAccFFT, SAMPLING_RATE_HERTZ);
         Log.d(LOG_TAG, "Z dominant frequency: " + zDominantFrequency);
 
-        if(xDominantFrequency >= 3 || yDominantFrequency >= 3 || zDominantFrequency >= 3) {
+        if (xDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ
+                || yDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ
+                || zDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ) {
             Log.d(LOG_TAG, "Tremor detected");
         }
     }
