@@ -27,7 +27,7 @@ import static android.hardware.Sensor.TYPE_LINEAR_ACCELERATION;
 public class TremorMonitor implements SensorEventListener {
     private static final String LOG_TAG = "TremorMonitor";
 
-    private static final int SAMPLE_DURATION_MILLISECONDS = 10000;
+    private static final int SAMPLE_DURATION_MILLISECONDS = 60000;
     private static final int SENSOR_DELAY_MICROSECONDS = 100000;
     private static final int MICROSECONDS_PER_SECOND = 1000000;
     private static final int SAMPLING_RATE_HERTZ = MICROSECONDS_PER_SECOND / SENSOR_DELAY_MICROSECONDS; // samples per second (Hz)

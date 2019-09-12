@@ -86,4 +86,20 @@ public class TremorTestActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void onClickResetTremorDatabaseButton(View view) {
+        final Context appContext = this.getApplicationContext();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    TremorDatabase tremorDatabase = TremorMonitor.getInstance(appContext).getTremorDatabase();
+                    tremorDatabase.tremorRecordDao().delete();
+                    Log.d(LOG_TAG, "Deleted Tremor Database");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 }

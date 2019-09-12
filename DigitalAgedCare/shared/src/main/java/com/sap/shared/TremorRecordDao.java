@@ -18,6 +18,9 @@ public interface TremorRecordDao {
     @Insert
     void insert(TremorRecord tremorRecord);
 
+    @Query("DELETE FROM tremor_records")
+    void delete();
+
 //    @Insert
 //    void insertAll(TremorRecord... tremorRecords);
 //
