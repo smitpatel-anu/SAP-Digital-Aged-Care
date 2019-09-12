@@ -140,7 +140,7 @@ public class TremorMonitor implements SensorEventListener {
                 || yDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ
                 || zDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ) {
             Log.d(LOG_TAG, "Tremor detected");
-            tremorDatabase.tremorRecordDao().insert(new TremorRecord(startTimestamp, endTimestamp, 5));
+            tremorDatabase.tremorRecordDao().insert(new TremorRecord(startTimestamp, endTimestamp, TremorSeverity.TREMOR_SEVERITY_5));
         }
     }
 

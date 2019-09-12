@@ -9,10 +9,10 @@ import java.util.List;
 
 @Dao
 public interface TremorRecordDao {
-    @Query("SELECT * FROM tremorrecord")
+    @Query("SELECT * FROM tremor_records")
     List<TremorRecord> getAll();
 
-    @Query("SELECT * FROM tremorrecord WHERE start_timestamp >= :startTimestampMillis AND end_timestamp <= :endTimestampMillis ")
+    @Query("SELECT * FROM tremor_records WHERE start_timestamp >= :startTimestampMillis AND end_timestamp <= :endTimestampMillis ")
     List<TremorRecord> findRecords(long startTimestampMillis, long endTimestampMillis);
 
     @Insert

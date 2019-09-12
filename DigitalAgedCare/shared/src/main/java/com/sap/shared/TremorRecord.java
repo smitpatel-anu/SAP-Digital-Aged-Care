@@ -3,10 +3,9 @@ package com.sap.shared;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
 
-import java.text.SimpleDateFormat;
-
-@Entity
+@Entity(tableName = "tremor_records")
 public class TremorRecord {
     @PrimaryKey
     @ColumnInfo(name = "start_timestamp")
@@ -16,7 +15,7 @@ public class TremorRecord {
     public long endTimestamp;
 
     @ColumnInfo(name = "tremor_severity")
-    public int tremorSeverity;
+    public TremorSeverity tremorSeverity;
 
     public long getStartTimestamp() {
         return startTimestamp;
@@ -34,15 +33,15 @@ public class TremorRecord {
         this.endTimestamp = endTimestamp;
     }
 
-    public int getTremorSeverity() {
+    public TremorSeverity getTremorSeverity() {
         return tremorSeverity;
     }
 
-    public void setTremorSeverity(int tremorSeverity) {
+    public void setTremorSeverity(TremorSeverity tremorSeverity) {
         this.tremorSeverity = tremorSeverity;
     }
 
-    TremorRecord(long startTimestamp, long endTimestamp, int tremorSeverity) {
+    TremorRecord(long startTimestamp, long endTimestamp, TremorSeverity tremorSeverity) {
         this.startTimestamp = startTimestamp;
         this.endTimestamp = endTimestamp;
         this.tremorSeverity = tremorSeverity;
@@ -59,7 +58,7 @@ public class TremorRecord {
         sb.append(new java.util.Date(endTimestamp).toString());
         sb.append(", ");
         sb.append("tremorSeverity: ");
-        sb.append(tremorSeverity);
+        sb.append(tremorSeverity.ordinal());
         sb.append("}");
         return sb.toString();
     }
