@@ -7,12 +7,15 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
+import androidx.room.Room;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Timer;
@@ -23,20 +26,28 @@ import static android.hardware.Sensor.TYPE_LINEAR_ACCELERATION;
 
 public class TremorMonitor implements SensorEventListener {
     private static final String LOG_TAG = "TremorMonitor";
-    private final SensorManager sensorManager;
-    private final Sensor sensorAccelerometer;
-    private final Sensor sensorGyroscope;
+
     private static final int SAMPLE_DURATION_MILLISECONDS = 10000;
     private static final int SENSOR_DELAY_MICROSECONDS = 100000;
     private static final int MICROSECONDS_PER_SECOND = 1000000;
     private static final int SAMPLING_RATE_HERTZ = MICROSECONDS_PER_SECOND / SENSOR_DELAY_MICROSECONDS; // samples per second (Hz)
     private static final int TREMOR_THRESHOLD_FREQUENCY_HERTZ = 3; // > 3 Hz is categorized as a tremor
 
-    private Timer detectionSampleTimer;
+    private final SensorManager sensorManager;
+    private final Sensor sensorAccelerometer;
+    private WeakReference<Context> appContext;
+    private final Sensor sensorGyroscope;
+    private final TremorDatabase tremorDatabase;
 
-    private ArrayList<Double> xAcceleration = new ArrayList<Double>();
-    private ArrayList<Double> yAcceleration = new ArrayList<Double>();
-    private ArrayList<Double> zAcceleration = new ArrayList<Double>();
+    private long currentRecordingStartTimestamp;
+    private long currentRecordingEndTimestamp;
+
+
+    private final Timer detectionSampleTimer;
+
+    private final ArrayList<Double> xAcceleration = new ArrayList<>();
+    private final ArrayList<Double> yAcceleration = new ArrayList<>();
+    private final ArrayList<Double> zAcceleration = new ArrayList<>();
 
 
     private static TremorMonitor instance = null;
@@ -46,28 +57,44 @@ public class TremorMonitor implements SensorEventListener {
             throw new NullContextException();
         }
 
+        this.appContext = new WeakReference<>(appContext);
+        this.tremorDatabase = Room.databaseBuilder(appContext,
+                TremorDatabase.class,
+                "tremor-database").build();
+
         sensorManager = (SensorManager) appContext.getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager == null) {
             throw new NullSensorManagerException();
         }
 
         sensorAccelerometer = sensorManager.getDefaultSensor(TYPE_LINEAR_ACCELERATION);
-//        sensorAccelerometer = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
         sensorGyroscope = sensorManager.getDefaultSensor(TYPE_GYROSCOPE);
 
         detectionSampleTimer = new Timer();
         detectionSampleTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                processAccelerometerData(new ArrayList<Double>(xAcceleration), new ArrayList<Double>(yAcceleration), new ArrayList<Double>(zAcceleration));
+                currentRecordingEndTimestamp = System.currentTimeMillis();
+                processAccelerometerData(new ArrayList<>(xAcceleration),
+                        new ArrayList<>(yAcceleration),
+                        new ArrayList<>(zAcceleration),
+                        currentRecordingStartTimestamp,
+                        currentRecordingEndTimestamp);
+                currentRecordingStartTimestamp = currentRecordingEndTimestamp;
                 xAcceleration.clear();
                 yAcceleration.clear();
                 zAcceleration.clear();
             }
         }, SAMPLE_DURATION_MILLISECONDS, SAMPLE_DURATION_MILLISECONDS);
+        currentRecordingStartTimestamp = System.currentTimeMillis();
     }
 
-    public static TremorMonitor getInstance(Context appContext) throws NullContextException, NullSensorManagerException {
+    public TremorDatabase getTremorDatabase() {
+        return tremorDatabase;
+    }
+
+    public static TremorMonitor getInstance(Context appContext)
+            throws NullContextException, NullSensorManagerException {
         if (instance == null) {
             instance = new TremorMonitor(appContext);
         }
@@ -76,17 +103,18 @@ public class TremorMonitor implements SensorEventListener {
     }
 
     public void start() {
-//        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
-//        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
-
-//        sensorManager.registerListener(this, sensorAccelerometer, SENSOR_DELAY_MICROSECONDS);
-//        sensorManager.registerListener(this, sensorGyroscope, SENSOR_DELAY_MICROSECONDS);
-
-        sensorManager.registerListener(this, sensorAccelerometer, SENSOR_DELAY_MICROSECONDS, SENSOR_DELAY_MICROSECONDS);
+        sensorManager.registerListener(this,
+                sensorAccelerometer,
+                SENSOR_DELAY_MICROSECONDS,
+                SENSOR_DELAY_MICROSECONDS);
 //        sensorManager.registerListener(this, sensorGyroscope, SENSOR_DELAY_MICROSECONDS, SENSOR_DELAY_MICROSECONDS);
     }
 
-    private void processAccelerometerData(ArrayList<Double> xAcceleration, ArrayList<Double> yAcceleration, ArrayList<Double> zAcceleration) {
+    private void processAccelerometerData(ArrayList<Double> xAcceleration,
+                                          ArrayList<Double> yAcceleration,
+                                          ArrayList<Double> zAcceleration,
+                                          long startTimestamp,
+                                          long endTimestamp) {
         Log.d(LOG_TAG, "X accelerometer (" + xAcceleration.size() + "): " + xAcceleration.toString());
         Log.d(LOG_TAG, "Y accelerometer (" + yAcceleration.size() + "): " + yAcceleration.toString());
         Log.d(LOG_TAG, "Z accelerometer (" + zAcceleration.size() + "): " + zAcceleration.toString());
@@ -112,6 +140,7 @@ public class TremorMonitor implements SensorEventListener {
                 || yDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ
                 || zDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ) {
             Log.d(LOG_TAG, "Tremor detected");
+            tremorDatabase.tremorRecordDao().insert(new TremorRecord(startTimestamp, endTimestamp, 5));
         }
     }
 
@@ -172,7 +201,6 @@ public class TremorMonitor implements SensorEventListener {
         xAcceleration.add((double) event.values[0]);
         yAcceleration.add((double) event.values[1]);
         zAcceleration.add((double) event.values[2]);
-
 
     }
 
