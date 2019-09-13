@@ -1,10 +1,11 @@
 package com.sap.shared;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverter;
 
+@SuppressWarnings("all")
 @Entity(tableName = "tremor_records")
 public class TremorRecord {
     @PrimaryKey
@@ -48,18 +49,19 @@ public class TremorRecord {
     }
 
     @Override
+    @NonNull
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("startTimestamp: ");
-        sb.append(new java.util.Date(startTimestamp).toString());
-        sb.append(", ");
-        sb.append("endTimestamp: ");
-        sb.append(new java.util.Date(endTimestamp).toString());
-        sb.append(", ");
-        sb.append("tremorSeverity: ");
-        sb.append(tremorSeverity.ordinal());
-        sb.append("}");
-        return sb.toString();
+        return new StringBuilder(128)
+                .append("{")
+                .append("startTimestamp: ")
+                .append(new java.util.Date(startTimestamp).toString())
+                .append(", ")
+                .append("endTimestamp: ")
+                .append(new java.util.Date(endTimestamp).toString())
+                .append(", ")
+                .append("tremorSeverity: ")
+                .append(tremorSeverity.ordinal())
+                .append("}")
+                .toString();
     }
 }

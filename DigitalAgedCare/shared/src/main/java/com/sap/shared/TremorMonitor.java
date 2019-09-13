@@ -27,11 +27,15 @@ import static android.hardware.Sensor.TYPE_LINEAR_ACCELERATION;
 public class TremorMonitor implements SensorEventListener {
     private static final String LOG_TAG = "TremorMonitor";
 
-    private static final int SAMPLE_DURATION_MILLISECONDS = 60000;
-    private static final int SENSOR_DELAY_MICROSECONDS = 100000;
     private static final int MICROSECONDS_PER_SECOND = 1000000;
+    private static final int MILLISECONDS_PER_SECOND = 1000;
+    private static final int SAMPLE_DURATION_MILLISECONDS = 60000;
+    private static final int SENSOR_DELAY_MICROSECONDS = 10000;
     private static final int SAMPLING_RATE_HERTZ = MICROSECONDS_PER_SECOND / SENSOR_DELAY_MICROSECONDS; // samples per second (Hz)
     private static final int TREMOR_THRESHOLD_FREQUENCY_HERTZ = 3; // > 3 Hz is categorized as a tremor
+    private static final int NUM_DATA_POINTS_PER_SAMPLE = (SAMPLE_DURATION_MILLISECONDS / MILLISECONDS_PER_SECOND) * SAMPLING_RATE_HERTZ;
+    // find nearest power of 2 greater than number of data points per sample
+    private static final int FFT_WINDOW_SIZE = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(NUM_DATA_POINTS_PER_SAMPLE - 1));
 
     private final SensorManager sensorManager;
     private final Sensor sensorAccelerometer;
@@ -39,9 +43,8 @@ public class TremorMonitor implements SensorEventListener {
     private final Sensor sensorGyroscope;
     private final TremorDatabase tremorDatabase;
 
-    private long currentRecordingStartTimestamp;
-    private long currentRecordingEndTimestamp;
-
+    private long currentSampleStartTimestamp;
+    private long currentSampleEndTimestamp;
 
     private final Timer detectionSampleTimer;
 
@@ -74,19 +77,19 @@ public class TremorMonitor implements SensorEventListener {
         detectionSampleTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                currentRecordingEndTimestamp = System.currentTimeMillis();
+                currentSampleEndTimestamp = System.currentTimeMillis();
                 processAccelerometerData(new ArrayList<>(xAcceleration),
                         new ArrayList<>(yAcceleration),
                         new ArrayList<>(zAcceleration),
-                        currentRecordingStartTimestamp,
-                        currentRecordingEndTimestamp);
-                currentRecordingStartTimestamp = currentRecordingEndTimestamp;
+                        currentSampleStartTimestamp,
+                        currentSampleEndTimestamp);
+                currentSampleStartTimestamp = currentSampleEndTimestamp;
                 xAcceleration.clear();
                 yAcceleration.clear();
                 zAcceleration.clear();
             }
         }, SAMPLE_DURATION_MILLISECONDS, SAMPLE_DURATION_MILLISECONDS);
-        currentRecordingStartTimestamp = System.currentTimeMillis();
+        currentSampleStartTimestamp = System.currentTimeMillis();
     }
 
     public TremorDatabase getTremorDatabase() {
@@ -122,17 +125,17 @@ public class TremorMonitor implements SensorEventListener {
         FastFourierTransformer fastFourierTransformer = new FastFourierTransformer(DftNormalization.STANDARD);
 
         Double[] xAcc = xAcceleration.toArray(new Double[0]);
-        Complex[] xAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(xAcc), 1024), TransformType.FORWARD);
+        Complex[] xAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(xAcc), FFT_WINDOW_SIZE), TransformType.FORWARD);
         double xDominantFrequency = getDominantFrequency(xAccFFT, SAMPLING_RATE_HERTZ);
         Log.d(LOG_TAG, "X dominant frequency: " + xDominantFrequency);
 
         Double[] yAcc = yAcceleration.toArray(new Double[0]);
-        Complex[] yAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(yAcc), 1024), TransformType.FORWARD);
+        Complex[] yAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(yAcc), FFT_WINDOW_SIZE), TransformType.FORWARD);
         double yDominantFrequency = getDominantFrequency(yAccFFT, SAMPLING_RATE_HERTZ);
         Log.d(LOG_TAG, "Y dominant frequency: " + yDominantFrequency);
 
         Double[] zAcc = zAcceleration.toArray(new Double[0]);
-        Complex[] zAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(zAcc), 1024), TransformType.FORWARD);
+        Complex[] zAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(zAcc), FFT_WINDOW_SIZE), TransformType.FORWARD);
         double zDominantFrequency = getDominantFrequency(zAccFFT, SAMPLING_RATE_HERTZ);
         Log.d(LOG_TAG, "Z dominant frequency: " + zDominantFrequency);
 
@@ -188,6 +191,8 @@ public class TremorMonitor implements SensorEventListener {
     }
 
     public void stop() {
+        detectionSampleTimer.cancel();
+        detectionSampleTimer.purge();
         sensorManager.unregisterListener(this, sensorAccelerometer);
 //        sensorManager.unregisterListener(this, sensorGyroscope);
     }
