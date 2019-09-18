@@ -17,12 +17,6 @@ import java.util.List;
  *
  */
 public class GPSLocationTracking {
-    // TODO: implement the GPS location tracking feature
-
-    public Location getCurrentLocation() {
-        // TODO: implement this method
-        return null;
-    }
     private FusedLocationProviderClient mFusedLocationClient;
     private static final String TAG = "GpsActivity";
     private LocationRequest locationRequest;
@@ -94,7 +88,7 @@ public class GPSLocationTracking {
     /**
      * Assign the location request settings
      */
-    protected void createLocationRequest() {
+    public void createLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(100);
