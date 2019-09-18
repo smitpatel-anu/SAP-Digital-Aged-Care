@@ -1,4 +1,4 @@
-package com.sap.shared;
+package com.sap.digitalagedcare;
 
 import android.content.Context;
 import android.location.Location;
