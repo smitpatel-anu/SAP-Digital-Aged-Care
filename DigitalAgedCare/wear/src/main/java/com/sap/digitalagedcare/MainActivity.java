@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 
+import com.sap.shared.GPSLocationTracking;
+
 public class MainActivity extends WearableActivity {
 
     private TextView mTextView;
