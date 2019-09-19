@@ -30,15 +30,15 @@ public class TremorMonitor implements SensorEventListener {
     private static final int MICROSECONDS_PER_SECOND = 1000000;
     private static final int MILLISECONDS_PER_SECOND = 1000;
 
-    private static final int SAMPLE_DURATION_MILLISECONDS = 5000;
-    private static final int SENSOR_DELAY_MICROSECONDS = 5000;
-    private static final int MOVING_AVERAGE_FILTER_NUM_POINTS = 5;
+    private static final int SAMPLING_PERIOD_MILLISECONDS = 60000;
+    private static final int SENSOR_DELAY_MICROSECONDS = 4000;
+    private static final int MOVING_AVERAGE_FILTER_NUM_POINTS = 10;
 
     private static final int TREMOR_THRESHOLD_FREQUENCY_HERTZ = 3; // > 3 Hz is categorized as a tremor
 
     private static final int SAMPLING_RATE_HERTZ = MICROSECONDS_PER_SECOND / (SENSOR_DELAY_MICROSECONDS * MOVING_AVERAGE_FILTER_NUM_POINTS); // samples per second (Hz)
 
-    private static final int NUM_DATA_POINTS_PER_SAMPLE = (SAMPLE_DURATION_MILLISECONDS / MILLISECONDS_PER_SECOND) * SAMPLING_RATE_HERTZ;
+    private static final int NUM_DATA_POINTS_PER_SAMPLE = (SAMPLING_PERIOD_MILLISECONDS / MILLISECONDS_PER_SECOND) * SAMPLING_RATE_HERTZ;
     // find nearest power of 2 greater than number of data points per sample
     private static final int FFT_NUM_DATA_POINTS = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(NUM_DATA_POINTS_PER_SAMPLE - 1));
 
@@ -118,7 +118,7 @@ public class TremorMonitor implements SensorEventListener {
                 rotation.clear();
 
             }
-        }, SAMPLE_DURATION_MILLISECONDS, SAMPLE_DURATION_MILLISECONDS);
+        }, SAMPLING_PERIOD_MILLISECONDS, SAMPLING_PERIOD_MILLISECONDS);
         sampleStartTimestamp = System.currentTimeMillis();
     }
 
@@ -136,7 +136,7 @@ public class TremorMonitor implements SensorEventListener {
     }
 
     private void printInfo() {
-        Log.d(LOG_TAG, "SAMPLE_DURATION_MILLISECONDS = " + SAMPLE_DURATION_MILLISECONDS);
+        Log.d(LOG_TAG, "SAMPLING_PERIOD_MILLISECONDS = " + SAMPLING_PERIOD_MILLISECONDS);
         Log.d(LOG_TAG, "SENSOR_DELAY_MICROSECONDS = " + SENSOR_DELAY_MICROSECONDS);
         Log.d(LOG_TAG, "MOVING_AVERAGE_FILTER_NUM_POINTS = " + MOVING_AVERAGE_FILTER_NUM_POINTS);
         Log.d(LOG_TAG, "TREMOR_THRESHOLD_FREQUENCY_HERTZ = " + TREMOR_THRESHOLD_FREQUENCY_HERTZ);
@@ -298,7 +298,7 @@ public class TremorMonitor implements SensorEventListener {
             return 0;
         }
 
-        return ((double) indexOfMaximum * ((double) SAMPLING_RATE_HERTZ / 2)) / (double) (fftResult.length / 2);
+        return ((double) indexOfMaximum * SAMPLING_RATE_HERTZ) / (double) (fftResult.length);
     }
 
     private int getIndexOfMaximum(double[] arr) {
