@@ -44,7 +44,6 @@ public class TremorMonitor implements SensorEventListener {
 
     private final SensorManager sensorManager;
     private final Sensor sensorAccelerometer;
-    private WeakReference<Context> appContext;
     private final Sensor sensorGyroscope;
     private final TremorDatabase tremorDatabase;
 
@@ -71,7 +70,6 @@ public class TremorMonitor implements SensorEventListener {
             throw new NullContextException();
         }
 
-        this.appContext = new WeakReference<>(appContext);
         this.tremorDatabase = Room.databaseBuilder(appContext,
                 TremorDatabase.class,
                 "tremor-database").build();
