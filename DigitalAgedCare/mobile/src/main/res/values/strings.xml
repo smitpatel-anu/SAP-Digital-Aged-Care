@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">DigitalAgedCare</string>
+    <string name="x">X:</string>
+    <string name="y">Y:</string>
+    <string name="z">Z:</string>
+    <string name="freefall">Free falling</string>
+    <string name="dialog_fall">Warning! Fall detected!</string>
+    <string name="help">Help!</string>
+    <string name="dismiss">Dismiss</string>
 </resources>
