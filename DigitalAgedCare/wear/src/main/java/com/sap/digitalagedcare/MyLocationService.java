@@ -40,7 +40,10 @@ public class MyLocationService extends Service {
 
     }
 
-
+    /**
+     *Build a notification appears when the app in background to inform the user about the
+     * foreground services.
+     */
     private Notification getNotification() {
         NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID,
