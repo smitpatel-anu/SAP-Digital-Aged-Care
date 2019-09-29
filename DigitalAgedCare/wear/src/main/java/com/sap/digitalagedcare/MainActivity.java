@@ -16,9 +16,9 @@ import com.sap.shared.GPSLocationTracking;
 public class MainActivity extends WearableActivity {
 
     private TextView mTextView;
+    public MyLocationService gpsService;
     private static final String TAG = "MainActivity";
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
-    GPSLocationTracking gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,17 +26,11 @@ public class MainActivity extends WearableActivity {
         setContentView(R.layout.activity_main);
 
         mTextView = (TextView) findViewById(R.id.text);
-        if(hasGps()) {
-            gps= new GPSLocationTracking(this);
-            if (!hasPermission(this)) {
-                Log.e(TAG, "Permission denied!");
-                return;
-            }
-            gps.getLastLocation();
-            gps.createLocationRequest();
-        }else {
-            Log.e(TAG, "The device does not have gps");
+        if (!hasPermission(this)) {
+            Log.e(TAG, "Permission denied!");
+            return;
         }
+
 
         // Enables Always-on
         setAmbientEnabled();
