@@ -23,7 +23,7 @@ import com.sap.shared.GPSLocationTracking;
 
 public class MainActivity extends WearableActivity {
 
-    private TextView mTextView;
+    private TextView locationTv;
     public MyLocationService locationService;
     private static final String TAG = "MainActivity";
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
@@ -33,7 +33,7 @@ public class MainActivity extends WearableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextView = (TextView) findViewById(R.id.text);
+        locationTv = (TextView) findViewById(R.id.text);
         if (!hasPermission(this)) {
             Log.e(TAG, "Permission denied!");
             return;
@@ -96,6 +96,7 @@ public class MainActivity extends WearableActivity {
             Bundle b = intent.getBundleExtra("Location");
             Location location = (Location) b.getParcelable("Location");
             if (location != null) {
+                locationTv.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
                 Log.i(TAG, "The Location is*:" +location.getLatitude() + " " + location.getLongitude());
             }
         }
