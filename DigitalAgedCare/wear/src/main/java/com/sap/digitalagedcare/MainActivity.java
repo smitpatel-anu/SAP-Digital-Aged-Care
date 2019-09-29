@@ -36,13 +36,6 @@ public class MainActivity extends WearableActivity {
         setAmbientEnabled();
     }
 
-    /**
-     *Check if the device has gps feature
-     * @return True if gps available
-     */
-    boolean hasGps(){
-        return getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-    }
 
     /**
      *Check the permission request result
