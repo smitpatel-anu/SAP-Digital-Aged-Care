@@ -1,10 +1,13 @@
 package com.sap.digitalagedcare;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -71,6 +74,21 @@ public class MainActivity extends WearableActivity {
 
         public void onServiceDisconnected(ComponentName className) {
             locationService = null;
+        }
+    };
+
+    /**
+     *receive an intent message from another class
+     */
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            Bundle b = intent.getBundleExtra("Location");
+            Location location = (Location) b.getParcelable("Location");
+            if (location != null) {
+                Log.i(TAG, "The Location is*:" +location.getLatitude() + " " + location.getLongitude());
+            }
         }
     };
 }
