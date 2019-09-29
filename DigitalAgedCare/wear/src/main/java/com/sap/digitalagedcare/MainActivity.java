@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.sap.shared.GPSLocationTracking;
 
@@ -36,6 +38,13 @@ public class MainActivity extends WearableActivity {
             Log.e(TAG, "Permission denied!");
             return;
         }
+
+
+        final Intent intent = new Intent(this.getApplication(), MyLocationService.class);
+        this.getApplication().startService(intent);
+        this.getApplication().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(
+                mMessageReceiver, new IntentFilter("GPSLocationUpdates"));
 
 
         // Enables Always-on
