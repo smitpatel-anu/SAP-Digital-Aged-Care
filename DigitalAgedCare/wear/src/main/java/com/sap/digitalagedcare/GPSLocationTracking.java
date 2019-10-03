@@ -21,7 +21,7 @@ public class GPSLocationTracking {
     private FusedLocationProviderClient mFusedLocationClient;
     private static final String TAG = "GpsActivity";
     private LocationRequest locationRequest;
-    private static final int UPDATE_INTERVAL_IN_MILLISECONDS = 600;
+    private static final int UPDATE_INTERVAL_IN_MILLISECONDS = 600000;
     private static final int FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS/2;
 
     private Context context;

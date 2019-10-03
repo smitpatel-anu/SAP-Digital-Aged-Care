@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 
@@ -26,6 +27,8 @@ public class MainActivity extends WearableActivity {
     public MyLocationService locationService;
     private static final String TAG = "MainActivity";
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
+    //public static final int MY_PERMISSIONS_REQUEST_COARSE_LOCATION = 102;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,7 @@ public class MainActivity extends WearableActivity {
         setContentView(R.layout.activity_main);
 
         locationTv = findViewById(R.id.location);
+        hasPermission(this);
         if (!hasPermission(this)) {
             Log.e(TAG, "Permission denied!");
             return;
@@ -58,16 +62,22 @@ public class MainActivity extends WearableActivity {
      */
     boolean hasPermission(Context context){
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-            }return false;
+
+            }//return false;
         }
         return true;
     }
+
+
 
     /**
      *monitoring the state of MyLocationService.
