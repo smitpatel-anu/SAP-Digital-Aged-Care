@@ -19,7 +19,6 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.sap.shared.GPSLocationTracking;
 
 public class MainActivity extends WearableActivity {
 
@@ -33,7 +32,7 @@ public class MainActivity extends WearableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        locationTv = (TextView) findViewById(R.id.text);
+        locationTv = findViewById(R.id.location);
         if (!hasPermission(this)) {
             Log.e(TAG, "Permission denied!");
             return;
