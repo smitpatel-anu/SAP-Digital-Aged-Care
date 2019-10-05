@@ -2,11 +2,13 @@ package com.sap.digitalagedcare;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -25,41 +27,56 @@ public class MainActivity extends WearableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        Button tremorTestActivityButton = (Button) findViewById(R.id.tremorTestActivityButton);
+//        tremorTestActivityButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                MainActivity.this.startActivity(new Intent(MainActivity.this, TremorTestActivity.class));
+//            }
+//        });
+
         mTextView = (TextView) findViewById(R.id.text);
-        if(hasGps()) {
-            gps= new GPSLocationTracking(this);
+        if (hasGps()) {
+            gps = new GPSLocationTracking(this);
             if (!hasPermission(this)) {
                 Log.e(TAG, "Permission denied!");
-                return;
+            } else {
+                gps.getLastLocation();
+                gps.createLocationRequest();
             }
-            gps.getLastLocation();
-            gps.createLocationRequest();
-        }else {
+        } else {
             Log.e(TAG, "The device does not have gps");
         }
 
         // Enables Always-on
-        setAmbientEnabled();
+//        setAmbientEnabled();
+    }
+
+    public void onClickTremorTestActivityButton(View view) {
+        startActivity(new Intent(MainActivity.this, TremorTestActivity.class));
     }
 
     /**
-     *Check if the device has gps feature
+     * Check if the device has gps feature
+     *
      * @return True if gps available
      */
-    boolean hasGps(){
+    boolean hasGps() {
         return getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
     }
 
     /**
-     *Check the permission request result
+     * Check the permission request result
+     *
      * @param context
      * @return True if user allow the location service
      */
-    boolean hasPermission(Context context){
+    boolean hasPermission(Context context) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-            }return false;
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+            }
+            return false;
         }
         return true;
     }
