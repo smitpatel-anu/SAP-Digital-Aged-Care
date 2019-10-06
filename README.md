@@ -16,6 +16,7 @@
 ## Audits Page
 ### [Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_1.md)
 ### [Audit 2](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_2.md)
+### [Audit 3](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_3.md)
 
 ## Features repo
 ### [Fall Detection](https://github.com/ginpie/Fall-Detection)
