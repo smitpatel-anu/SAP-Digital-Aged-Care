@@ -10,11 +10,17 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.wearable.activity.WearableActivity;
+
 import android.util.Log;
 import android.view.View;
+
+import android.view.View;
+import android.widget.Button;
+
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -24,17 +30,22 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class MainActivity extends WearableActivity {
 
+
     private TextView locationTv;
     public MyLocationService locationService;
     private static final String TAG = "MainActivity";
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
     //public static final int MY_PERMISSIONS_REQUEST_COARSE_LOCATION = 102;
 
+    private Button button;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
 //        Button tremorTestActivityButton = (Button) findViewById(R.id.tremorTestActivityButton);
 //        tremorTestActivityButton.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +130,24 @@ public class MainActivity extends WearableActivity {
             }//return false;
 
         return true;
+                        }
+    }
+
+
+        button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                openActivity();
+            }
+        });
+
+    }
+
+    public void openActivity(){
+        Intent intent = new Intent(this, FallDetectionActivity.class);
+        startActivity(intent);
+
     }
 
 
