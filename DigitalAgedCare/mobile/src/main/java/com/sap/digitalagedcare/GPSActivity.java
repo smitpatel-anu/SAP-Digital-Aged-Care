@@ -33,8 +33,8 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_gps);
 
-        TextView lon = findViewById(R.id.Longitude);
-        TextView lat = findViewById(R.id.Latitude);
+//        TextView lon = findViewById(R.id.Longitude);
+//        TextView lat = findViewById(R.id.Latitude);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLastLocation();

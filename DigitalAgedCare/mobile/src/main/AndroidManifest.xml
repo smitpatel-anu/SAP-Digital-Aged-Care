@@ -23,7 +23,9 @@
         android:value="@string/map_key"/>
 
         <activity android:name=".TremorTestActivity"></activity>
-        <activity android:name=".FallDetectionActivity" />
+        <activity android:name=".FallDetectionActivity"></activity>
+        <activity android:name=".FallDetectionActivity_ML"></activity>
+        <activity android:name=".GPSActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

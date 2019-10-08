@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // start GPS test activity
-        Button GPSActivityButton = findViewById(R.id.GPSActivityButton);
-        fallDetectionActivityButton.setOnClickListener(new View.OnClickListener(){
+        Button gpsActivityButton = findViewById(R.id.GPSActivityButton);
+        gpsActivityButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, GPSActivity.class));
