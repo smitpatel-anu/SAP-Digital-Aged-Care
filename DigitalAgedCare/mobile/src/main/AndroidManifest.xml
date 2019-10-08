@@ -18,6 +18,10 @@
 
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+        android:value="@string/map_key"/>
+
         <activity android:name=".TremorTestActivity"></activity>
         <activity android:name=".FallDetectionActivity" />
         <activity android:name=".MainActivity">

@@ -14,7 +14,6 @@ import com.sap.shared.TremorMonitor;
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "MainActivity";
-    private Button button;
 
 
     @Override
@@ -22,8 +21,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // start tremor test activity
         Button tremorTestActivityButton = (Button)findViewById(R.id.tremorTestActivityButton);
-
         tremorTestActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -31,19 +30,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        button = findViewById(R.id.b);
-        button.setOnClickListener(new View.OnClickListener(){
+        // start fall detection test activity
+        Button fallDetectionActivityButton = findViewById(R.id.fallDetectionActivityButton);
+        fallDetectionActivityButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                openActivity();
+                startActivity(new Intent(MainActivity.this, FallDetectionActivity.class));
+            }
+        });
+
+        // start GPS test activity
+        Button GPSActivityButton = findViewById(R.id.GPSActivityButton);
+        fallDetectionActivityButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, GPSActivity.class));
             }
         });
     }
 
-    public void openActivity(){
-        Intent intent = new Intent(this, FallDetectionActivity.class);
-        startActivity(intent);
-    }
 
 //    @Override
 //    protected void onStart() {

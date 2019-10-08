@@ -7,4 +7,5 @@
     <string name="dialog_fall">Warning! Fall detected!</string>
     <string name="help">Help!</string>
     <string name="dismiss">Dismiss</string>
+    <string name="map_key" translatable="false">AIzaSyAdYl5sPMCD1GC_A4yZsogPLoQo2lv9jSQ</string>
 </resources>
