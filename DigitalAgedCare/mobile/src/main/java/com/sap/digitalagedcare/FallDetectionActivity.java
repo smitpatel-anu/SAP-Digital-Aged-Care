@@ -2,7 +2,10 @@ package com.sap.digitalagedcare;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,7 +15,12 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import android.os.CountDownTimer;
+import android.telephony.SmsManager;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +43,8 @@ import org.w3c.dom.Text;
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 
 public class FallDetectionActivity extends AppCompatActivity implements SensorEventListener {
@@ -51,7 +61,12 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
     private Thread thread;
     private boolean plotData = true;
 
-    private boolean bp = true;
+    private boolean bp = true;  // can beep?
+    private boolean ff = false; // free fall detect?
+
+    private int MAX_ENTRY = 30;
+
+    String number = "0426708718";
 
     /* A LinkedList is used to store collected data, each piece of data is
      * an array of 2 elements: value and timestamp
@@ -124,8 +139,8 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
         yl.setTextColor(Color.BLACK);
         yl.setTextSize(20f);
         yl.setDrawGridLines(false);
-        yl.setAxisMaximum(10f);
-        yl.setAxisMinimum(-10f);
+        yl.setAxisMaximum(25f);
+        yl.setAxisMinimum(0f);
         yl.setDrawGridLines(true);
 
         YAxis yr = myChart.getAxisRight();
@@ -192,9 +207,14 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
 
             // free fall event
             if (acc<1f && bp) {
+                ff = true;
                 bp = false;
                 beep();
                 Toast.makeText(FallDetectionActivity.this, R.string.freefall,Toast.LENGTH_SHORT).show();
+            }
+            if (acc>20f && ff){
+                ff = false;
+                openDialog();
             }
             if (acc>3f && !bp) {
                 bp = true;
@@ -215,17 +235,63 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
         }
 
         if (plotData){
-            addEntry(event);
+            addEntry(acc);
             plotData = false;
         }
     }
 
+    public void openDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Warning")
+                .setMessage("Fall detected, send message to emergency contact?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendSMS();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            private static final int AUTO_DISMISS_MILLIS = 6000;
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                final Button defaultButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                final CharSequence negativeButtonText = defaultButton.getText();
+                new CountDownTimer(AUTO_DISMISS_MILLIS, 100) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        defaultButton.setText(String.format(
+                                Locale.getDefault(), "%s (%d)",
+                                negativeButtonText,
+                                TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) + 1 //add one so it never displays zero
+                        ));
+                    }
+                    @Override
+                    public void onFinish() {
+                        if (((AlertDialog) dialog).isShowing()) {
+                            dialog.dismiss();
+                        }
+                    }
+                }.start();
+            }
+        });
+        dialog.show();
+    }
 
-    private void addEntry(SensorEvent event){
+    private void sendSMS(){
+        String messageToSend = "Warning message: fall detected for the Digital Aged Care user!";
+
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
+        SmsManager.getDefault().sendTextMessage(number, null, messageToSend, null,null);
+    }
+
+
+    private void addEntry(float f){
         LineData lineData = myChart.getData();
 
         if (lineData != null){
-            ILineDataSet set = lineData.getDataSetByIndex(0);
+            LineDataSet set = (LineDataSet)lineData.getDataSetByIndex(0);
 
             if (set == null){
                 set = createSet();
@@ -233,7 +299,13 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
             }
 
             // add entries of xValues to the data
-            lineData.addEntry(new Entry(set.getEntryCount(), event.values[0]), 0);
+            lineData.addEntry(new Entry(set.getEntryCount(), f), 0);
+            if (set.getEntryCount() == MAX_ENTRY){
+                set.removeFirst();
+                for (Entry entry : set.getValues() )
+                    entry.setX(entry.getX() - 1);
+            }
+
             // enable the chart know when its data has changed
             lineData.notifyDataChanged();
             myChart.notifyDataSetChanged();

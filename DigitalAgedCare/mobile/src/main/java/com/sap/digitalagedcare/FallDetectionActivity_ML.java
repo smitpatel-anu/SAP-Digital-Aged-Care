@@ -70,7 +70,7 @@ public class FallDetectionActivity_ML extends AppCompatActivity implements Senso
     private int peak_count = 0;
     private boolean peak = false;
 
-    private int MAX_ENTRY = 100;
+    private int MAX_ENTRY = 30;
 
     // lists for storing training and testing datasets label and features.
     private List<Float[]> trainfeatures = new ArrayList<>();
@@ -87,7 +87,7 @@ public class FallDetectionActivity_ML extends AppCompatActivity implements Senso
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
-        setContentView(R.layout.activity_fall_detection_ml);
+        setContentView(R.layout.activity_fall_detection);
 
         // get an instance of the SensorManager
         Log.d(TAG, "onCreate: Initializing sensor service.");
