@@ -105,7 +105,7 @@ public class TremorTestActivity extends WearableActivity {
 
                     String tremorSeverityString = "Severity: " + mostRecentTremorRecord.getTremorSeverity().ordinal();
 
-                    final String tremorActivityString = dateString + " " + startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
+                    final String tremorActivityString = startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
                     TremorTestActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

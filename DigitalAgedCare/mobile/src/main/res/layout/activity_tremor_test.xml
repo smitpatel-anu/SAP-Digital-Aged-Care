@@ -61,7 +61,7 @@
         android:scrollbars="vertical"
         android:scrollHorizontally="false"
         android:textAlignment="viewStart"
-        android:textSize="12sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

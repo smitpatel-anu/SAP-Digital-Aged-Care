@@ -79,6 +79,8 @@ public class TremorTestActivity extends AppCompatActivity {
             Log.e(LOG_TAG, "Failed to start tremor monitoring, " + e.getMessage());
         }
 
+        tremorActivityLogTextView.setText("Starting Tremor Monitor...");
+
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
@@ -105,7 +107,7 @@ public class TremorTestActivity extends AppCompatActivity {
 
                     String tremorSeverityString = "Tremor Severity: " + mostRecentTremorRecord.getTremorSeverity().ordinal();
 
-                    final String tremorActivityString = dateString + " " + startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
+                    final String tremorActivityString = startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
 
                     TremorTestActivity.this.runOnUiThread(new Runnable() {
                         @Override
