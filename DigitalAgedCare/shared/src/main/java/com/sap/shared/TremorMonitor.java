@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.hardware.Sensor.TYPE_ACCELEROMETER;
 import static android.hardware.Sensor.TYPE_GYROSCOPE;
 import static android.hardware.Sensor.TYPE_LINEAR_ACCELERATION;
 
@@ -324,12 +323,12 @@ public class TremorMonitor implements SensorEventListener {
             return 0;
         }
 
-        double[] amplitudes = getAmplitudesFromFFT(fftResult);
-        if (amplitudes != null) {
-            amplitudes[0] = 0; // fftResult[0] is the offset, zero it before getting index of max
+        double[] magnitudes = getMagnitudesFromFFT(fftResult);
+        if (magnitudes != null) {
+            magnitudes[0] = 0; // fftResult[0] is the offset, zero it before getting index of max
         }
 
-        int indexOfMaximum = getIndexOfMaximum(amplitudes);
+        int indexOfMaximum = getIndexOfMaximum(magnitudes);
         if (indexOfMaximum < 0) {
             return 0;
         }
@@ -356,7 +355,7 @@ public class TremorMonitor implements SensorEventListener {
         return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
     }
 
-    private double[] getAmplitudesFromFFT(Complex[] fftResult) {
+    private double[] getMagnitudesFromFFT(Complex[] fftResult) {
         if (fftResult == null) {
             return null;
         }
