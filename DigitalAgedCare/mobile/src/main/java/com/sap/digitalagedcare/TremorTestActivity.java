@@ -72,7 +72,7 @@ public class TremorTestActivity extends AppCompatActivity {
                             String startTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
                             String endTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.endTimestamp));
 
-                            String tremorSeverityString = "Severity: " + mostRecentTremorRecord.getTremorSeverity();
+                            String tremorSeverityString = "Severity: " + mostRecentTremorRecord.getTremorSeverity().ordinal();
 
                             String tremorActivityString = dateString + " " + startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
                             ((Editable) tremorActivityLogTextView.getText()).insert(0, tremorActivityString);

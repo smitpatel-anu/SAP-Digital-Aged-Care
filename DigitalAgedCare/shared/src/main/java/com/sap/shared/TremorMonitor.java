@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.hardware.Sensor.TYPE_ACCELEROMETER;
 import static android.hardware.Sensor.TYPE_GYROSCOPE;
 import static android.hardware.Sensor.TYPE_LINEAR_ACCELERATION;
 
@@ -31,9 +32,9 @@ public class TremorMonitor implements SensorEventListener {
     private static final int MICROSECONDS_PER_SECOND = 1000000;
     private static final int MILLISECONDS_PER_SECOND = 1000;
 
-    private static final int SAMPLING_PERIOD_MILLISECONDS = 5000;
+    private static final int SAMPLING_PERIOD_MILLISECONDS = 10000;
     private static final int SENSOR_DELAY_MICROSECONDS = 5000;
-    private static final int MOVING_AVERAGE_FILTER_NUM_POINTS = 3;
+    private static final int MOVING_AVERAGE_FILTER_NUM_POINTS = 2;
 
     private static final int TREMOR_THRESHOLD_FREQUENCY_HERTZ = 3; // > 3 Hz is categorized as a tremor
 
@@ -87,8 +88,25 @@ public class TremorMonitor implements SensorEventListener {
         detectionSampleTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
                 sampleEndTimestampMillis = System.currentTimeMillis();
+
+                Log.d(LOG_TAG, "Average Accelerometer Sensor Delay: " + averageAccSensorDelayMicros / 1000);
+                Log.d(LOG_TAG, "Average Gyroscope Sensor Delay: " + averageGyroSensorDelayMicros / 1000);
+
+                if(xAcceleration.isEmpty() && yAcceleration.isEmpty() && zAcceleration.isEmpty() && acceleration.isEmpty()) {
+                    tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
+                            sampleEndTimestampMillis,
+                            TremorSeverity.TREMOR_SEVERITY_0));
+                    sampleStartTimestampMillis = sampleEndTimestampMillis;
+                    return;
+                }
+                if(xRotation.isEmpty() && yRotation.isEmpty() && zRotation.isEmpty() && rotation.isEmpty()) {
+                    tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
+                            sampleEndTimestampMillis,
+                            TremorSeverity.TREMOR_SEVERITY_0));
+                    sampleStartTimestampMillis = sampleEndTimestampMillis;
+                    return;
+                }
 
                 double accelerometerDominantFrequency = getAccelerometerDominantFrequency(new ArrayList<>(xAcceleration),
                         new ArrayList<>(yAcceleration),
@@ -104,15 +122,12 @@ public class TremorMonitor implements SensorEventListener {
                         sampleStartTimestampMillis,
                         sampleEndTimestampMillis);
 
-                if (accelerometerDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ
-                        || gyroscopeDominantFrequency >= TREMOR_THRESHOLD_FREQUENCY_HERTZ) {
-                    Log.d(LOG_TAG, "Tremor detected");
-                    double maxDominantFrequency = Math.max(accelerometerDominantFrequency, gyroscopeDominantFrequency);
-                    TremorSeverity tremorSeverity = getTremorSeverity(maxDominantFrequency);
-                    tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
-                            sampleEndTimestampMillis,
-                            tremorSeverity));
-                }
+
+                double maxDominantFrequency = Math.max(accelerometerDominantFrequency, gyroscopeDominantFrequency);
+                TremorSeverity tremorSeverity = getTremorSeverity(maxDominantFrequency);
+                tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
+                        sampleEndTimestampMillis,
+                        tremorSeverity));
 
                 sampleStartTimestampMillis = sampleEndTimestampMillis;
 
@@ -132,19 +147,15 @@ public class TremorMonitor implements SensorEventListener {
     }
 
     private TremorSeverity getTremorSeverity(double frequency) {
-        if(frequency >= 7) {
+        if (frequency >= 7) {
             return TremorSeverity.TREMOR_SEVERITY_5;
-        }
-        else if(frequency >= 6) {
+        } else if (frequency >= 6) {
             return TremorSeverity.TREMOR_SEVERITY_4;
-        }
-        else if(frequency >= 5) {
+        } else if (frequency >= 5) {
             return TremorSeverity.TREMOR_SEVERITY_3;
-        }
-        else if(frequency >= 4) {
+        } else if (frequency >= 4) {
             return TremorSeverity.TREMOR_SEVERITY_2;
-        }
-        else if(frequency >= 3) {
+        } else if (frequency >= 3) {
             return TremorSeverity.TREMOR_SEVERITY_1;
         }
 
@@ -179,14 +190,18 @@ public class TremorMonitor implements SensorEventListener {
     }
 
     public void start() {
+//        sensorManager.registerListener(this,
+//                sensorAccelerometer,
+//                SENSOR_DELAY_MICROSECONDS);
+//        sensorManager.registerListener(this,
+//                sensorGyroscope,
+//                SENSOR_DELAY_MICROSECONDS);
         sensorManager.registerListener(this,
                 sensorAccelerometer,
-                SENSOR_DELAY_MICROSECONDS,
-                SENSOR_DELAY_MICROSECONDS);
+                0);
         sensorManager.registerListener(this,
                 sensorGyroscope,
-                SENSOR_DELAY_MICROSECONDS,
-                SENSOR_DELAY_MICROSECONDS);
+                0);
         printInfo();
     }
 
@@ -287,8 +302,8 @@ public class TremorMonitor implements SensorEventListener {
     }
 
     private ArrayList<Double> movingAverageFilter(ArrayList<Double> inputData, int numPoints) {
-        if (inputData == null) {
-            return null;
+        if (inputData == null || numPoints == 1) {
+            return inputData;
         }
 
         ArrayList<Double> resultData = new ArrayList<Double>();
@@ -298,7 +313,7 @@ public class TremorMonitor implements SensorEventListener {
             for (int pointIndex = 0; pointIndex < numPoints; pointIndex++) {
                 sum += inputData.get(resultDataIndex + pointIndex);
             }
-            resultData.add(sum / numPoints);
+            resultData.add(sum / (double) numPoints);
         }
 
         return resultData;
@@ -362,6 +377,14 @@ public class TremorMonitor implements SensorEventListener {
         sensorManager.unregisterListener(this, sensorGyroscope);
     }
 
+    private long prevAccEventTimestampNanos;
+    private long averageAccSensorDelayMicros;
+    private long numAccSamples;
+
+    private long prevGyroEventTimestampNanos;
+    private long averageGyroSensorDelayMicros;
+    private long numGyroSamples;
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event == null) {
@@ -373,11 +396,30 @@ public class TremorMonitor implements SensorEventListener {
             yAcceleration.add((double) event.values[1]);
             zAcceleration.add((double) event.values[2]);
             acceleration.add(getVectorMagnitude(event.values[0], event.values[1], event.values[2]));
+
+
+
+            if(prevAccEventTimestampNanos == 0) {
+                prevAccEventTimestampNanos = event.timestamp;
+            } else {
+                averageAccSensorDelayMicros = (numAccSamples * averageAccSensorDelayMicros + (event.timestamp - prevAccEventTimestampNanos)) / (numAccSamples + 1);
+                prevAccEventTimestampNanos = event.timestamp;
+            }
+            numAccSamples++;
         } else if (event.sensor.getType() == TYPE_GYROSCOPE) {
             xRotation.add((double) event.values[0]);
             yRotation.add((double) event.values[1]);
             zRotation.add((double) event.values[2]);
             rotation.add(getVectorMagnitude(event.values[0], event.values[1], event.values[2]));
+
+
+            if(prevGyroEventTimestampNanos == 0) {
+                prevGyroEventTimestampNanos = event.timestamp;
+            } else {
+                averageGyroSensorDelayMicros = (numGyroSamples * averageGyroSensorDelayMicros + (event.timestamp - prevGyroEventTimestampNanos)) / (numGyroSamples + 1);
+                prevGyroEventTimestampNanos = event.timestamp;
+            }
+            numGyroSamples++;
         }
     }
 
