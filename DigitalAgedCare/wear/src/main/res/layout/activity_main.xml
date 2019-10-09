@@ -19,14 +19,13 @@
         android:clickable="true"
         android:enabled="true"
         android:focusable="true"
-        android:onClick="onClickTremorTestActivityButton"
         android:text="Tremor Test"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/fallDetectionActivityButton" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/fallDetectionActivityButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="52dp"

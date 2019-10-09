@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sap.digitalagedcare">
 
-	<uses-feature android:name="android.hardware.type.watch" />
-    
+    <uses-feature android:name="android.hardware.type.watch" />
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -20,27 +20,6 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".TremorTestActivity"></activity>
-        <activity
-            android:name=".FallDetectionActivity"
-            android:label="@string/title_activity_fall_detection">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <meta-data
-            android:name="com.google.android.wearable.standalone"
-            android:value="true" />
-
-        <!--
-               Set to true if your app is Standalone, that is, it does not require the handheld
-               app to run.
-        -->
-        <service
-            android:name=".MyLocationService"
-            android:enabled="true" />
 
         <activity
             android:name=".MainActivity"
@@ -52,9 +31,26 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".FallDetectionActivity"
+            android:label="@string/title_activity_fall_detection">
+        </activity>
+
+        <activity android:name=".TremorTestActivity" />
+
+
+        <!--
+               Set to true if your app is Standalone, that is, it does not require the handheld
+               app to run.
+        -->
+        <service
+            android:name=".MyLocationService"
+            android:enabled="true" />
+
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
+
         <uses-library
             android:name="com.google.android.wearable"
             android:required="true" />
