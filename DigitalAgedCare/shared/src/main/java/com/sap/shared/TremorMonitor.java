@@ -31,7 +31,7 @@ public class TremorMonitor implements SensorEventListener {
     private static final int MICROSECONDS_PER_SECOND = 1000000;
     private static final int MILLISECONDS_PER_SECOND = 1000;
 
-    private static final int SAMPLING_PERIOD_MILLISECONDS = 10000;
+    private static final int SAMPLING_PERIOD_MILLISECONDS = 5000;
     private static final int SENSOR_DELAY_MICROSECONDS = 5000;
     private static final int MOVING_AVERAGE_FILTER_NUM_POINTS = 3;
 
@@ -153,6 +153,10 @@ public class TremorMonitor implements SensorEventListener {
 
     public TremorDatabase getTremorDatabase() {
         return tremorDatabase;
+    }
+
+    public TremorRecord getMostRecentTremorRecord() {
+        return tremorDatabase.tremorRecordDao().getMostRecentRecord();
     }
 
     public static TremorMonitor getInstance(Context appContext)
