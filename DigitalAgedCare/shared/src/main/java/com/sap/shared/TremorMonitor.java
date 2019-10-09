@@ -21,8 +21,9 @@ import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.hardware.Sensor.TYPE_ACCELEROMETER;
+import static android.hardware.Sensor.TYPE_GRAVITY;
 import static android.hardware.Sensor.TYPE_GYROSCOPE;
-import static android.hardware.Sensor.TYPE_LINEAR_ACCELERATION;
 
 @SuppressWarnings("all")
 public class TremorMonitor implements SensorEventListener {
@@ -31,9 +32,10 @@ public class TremorMonitor implements SensorEventListener {
     private static final int MICROSECONDS_PER_SECOND = 1000000;
     private static final int MILLISECONDS_PER_SECOND = 1000;
 
-    private static final int SAMPLING_PERIOD_MILLISECONDS = 10000;
+    private static final int SAMPLING_PERIOD_MILLISECONDS = 2000;
     private static final int SENSOR_DELAY_MICROSECONDS = 5000;
-    private static final int MOVING_AVERAGE_FILTER_NUM_POINTS = 2;
+    private static final int MOVING_AVERAGE_FILTER_NUM_POINTS = 1;
+    private static final float LOW_PASS_FILTER_ALPHA = 0f;
 
     private static final int TREMOR_THRESHOLD_FREQUENCY_HERTZ = 3; // > 3 Hz is categorized as a tremor
 
@@ -45,6 +47,7 @@ public class TremorMonitor implements SensorEventListener {
 
     private final SensorManager sensorManager;
     private final Sensor sensorAccelerometer;
+    private final Sensor sensorGravity;
     private final Sensor sensorGyroscope;
     private final TremorDatabase tremorDatabase;
 
@@ -80,7 +83,8 @@ public class TremorMonitor implements SensorEventListener {
             throw new NullSensorManagerException();
         }
 
-        sensorAccelerometer = sensorManager.getDefaultSensor(TYPE_LINEAR_ACCELERATION);
+        sensorAccelerometer = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
+        sensorGravity = sensorManager.getDefaultSensor(TYPE_GRAVITY);
         sensorGyroscope = sensorManager.getDefaultSensor(TYPE_GYROSCOPE);
 
         detectionSampleTimer = new Timer();
@@ -92,20 +96,20 @@ public class TremorMonitor implements SensorEventListener {
                 Log.d(LOG_TAG, "Average Accelerometer Sensor Delay: " + averageAccSensorDelayMicros / 1000);
                 Log.d(LOG_TAG, "Average Gyroscope Sensor Delay: " + averageGyroSensorDelayMicros / 1000);
 
-                if(xAcceleration.isEmpty() && yAcceleration.isEmpty() && zAcceleration.isEmpty() && acceleration.isEmpty()) {
+                if (xAcceleration.isEmpty() && yAcceleration.isEmpty() && zAcceleration.isEmpty() && acceleration.isEmpty()) {
                     tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
                             sampleEndTimestampMillis,
                             TremorSeverity.TREMOR_SEVERITY_0));
                     sampleStartTimestampMillis = sampleEndTimestampMillis;
                     return;
                 }
-                if(xRotation.isEmpty() && yRotation.isEmpty() && zRotation.isEmpty() && rotation.isEmpty()) {
-                    tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
-                            sampleEndTimestampMillis,
-                            TremorSeverity.TREMOR_SEVERITY_0));
-                    sampleStartTimestampMillis = sampleEndTimestampMillis;
-                    return;
-                }
+//                if(xRotation.isEmpty() && yRotation.isEmpty() && zRotation.isEmpty() && rotation.isEmpty()) {
+//                    tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
+//                            sampleEndTimestampMillis,
+//                            TremorSeverity.TREMOR_SEVERITY_0));
+//                    sampleStartTimestampMillis = sampleEndTimestampMillis;
+//                    return;
+//                }
 
                 double accelerometerDominantFrequency = getAccelerometerDominantFrequency(new ArrayList<>(xAcceleration),
                         new ArrayList<>(yAcceleration),
@@ -114,15 +118,16 @@ public class TremorMonitor implements SensorEventListener {
                         sampleStartTimestampMillis,
                         sampleEndTimestampMillis);
 
-                double gyroscopeDominantFrequency = getGyroscopeDominantFrequency(new ArrayList<>(xRotation),
-                        new ArrayList<>(yRotation),
-                        new ArrayList<>(zRotation),
-                        new ArrayList<>(rotation),
-                        sampleStartTimestampMillis,
-                        sampleEndTimestampMillis);
+//                double gyroscopeDominantFrequency = getGyroscopeDominantFrequency(new ArrayList<>(xRotation),
+//                        new ArrayList<>(yRotation),
+//                        new ArrayList<>(zRotation),
+//                        new ArrayList<>(rotation),
+//                        sampleStartTimestampMillis,
+//                        sampleEndTimestampMillis);
 
 
-                double maxDominantFrequency = Math.max(accelerometerDominantFrequency, gyroscopeDominantFrequency);
+//                double maxDominantFrequency = Math.max(accelerometerDominantFrequency, gyroscopeDominantFrequency);
+                double maxDominantFrequency = Math.max(accelerometerDominantFrequency, 0);
                 TremorSeverity tremorSeverity = getTremorSeverity(maxDominantFrequency);
                 tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
                         sampleEndTimestampMillis,
@@ -199,8 +204,11 @@ public class TremorMonitor implements SensorEventListener {
                 sensorAccelerometer,
                 0);
         sensorManager.registerListener(this,
-                sensorGyroscope,
+                sensorGravity,
                 0);
+//        sensorManager.registerListener(this,
+//                sensorGyroscope,
+//                0);
         printInfo();
     }
 
@@ -285,18 +293,20 @@ public class TremorMonitor implements SensorEventListener {
         Double[] xAcc = xAccFiltered.toArray(new Double[0]);
         Complex[] xAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(xAcc), FFT_SIZE), TransformType.FORWARD);
         double xDominantFrequency = getDominantFrequency(xAccFFT);
-        Log.d(LOG_TAG, "X acc dominant frequency: " + xDominantFrequency);
 
         Double[] yAcc = yAccFiltered.toArray(new Double[0]);
         Complex[] yAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(yAcc), FFT_SIZE), TransformType.FORWARD);
         double yDominantFrequency = getDominantFrequency(yAccFFT);
-        Log.d(LOG_TAG, "Y acc dominant frequency: " + yDominantFrequency);
 
         Double[] zAcc = zAccFiltered.toArray(new Double[0]);
         Complex[] zAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(zAcc), FFT_SIZE), TransformType.FORWARD);
         double zDominantFrequency = getDominantFrequency(zAccFFT);
+
+        Log.d(LOG_TAG, "X acc dominant frequency: " + xDominantFrequency);
+        Log.d(LOG_TAG, "Y acc dominant frequency: " + yDominantFrequency);
         Log.d(LOG_TAG, "Z acc dominant frequency: " + zDominantFrequency);
 
+//        return dominantFrequency;
         return Collections.max(Arrays.asList(dominantFrequency, xDominantFrequency, yDominantFrequency, zDominantFrequency));
     }
 
@@ -384,27 +394,69 @@ public class TremorMonitor implements SensorEventListener {
     private long averageGyroSensorDelayMicros;
     private long numGyroSamples;
 
+    private float gravityX;
+    private float gravityY;
+    private float gravityZ;
+
+    private float[] accFiltered;
+
+    protected float[] lowPassFilter(float[] prev, float[] curr) {
+        if (curr == null) return prev;
+
+        for (int i = 0; i < prev.length; i++) {
+            curr[i] = curr[i] + LOW_PASS_FILTER_ALPHA * (prev[i] - curr[i]);
+        }
+        return curr;
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event == null) {
             return;
         }
 
-        if (event.sensor.getType() == TYPE_LINEAR_ACCELERATION) {
+        if (event.sensor.getType() == TYPE_ACCELEROMETER) {
+            accFiltered = lowPassFilter(event.values.clone(), accFiltered);
+
+            final float alpha = 0.9f;
+
+            // Isolate the force of gravity with the low-pass filter.
+            float gravX = alpha * gravityX + (1 - alpha) * accFiltered[0];
+            float gravY = alpha * gravityY + (1 - alpha) * accFiltered[1];
+            float gravZ = alpha * gravityZ + (1 - alpha) * accFiltered[2];
+
+            // Remove the gravity contribution with the high-pass filter.
+            float linearAccelerationX = accFiltered[0] - gravX;
+            float linearAccelerationY = accFiltered[1] - gravY;
+            float linearAccelerationZ = accFiltered[2] - gravZ;
+
+//            xAcceleration.add((double) linearAccelerationX);
+//            yAcceleration.add((double) linearAccelerationY);
+//            zAcceleration.add((double) linearAccelerationZ);
+
             xAcceleration.add((double) event.values[0]);
             yAcceleration.add((double) event.values[1]);
             zAcceleration.add((double) event.values[2]);
+
+//            xAcceleration.add((double) accFiltered[0]);
+//            yAcceleration.add((double) accFiltered[1]);
+//            zAcceleration.add((double) accFiltered[2]);
+
+//            acceleration.add(getVectorMagnitude(linearAccelerationX, linearAccelerationY, linearAccelerationZ));
             acceleration.add(getVectorMagnitude(event.values[0], event.values[1], event.values[2]));
+//            acceleration.add(getVectorMagnitude(accFiltered[0], accFiltered[1], accFiltered[2]));
 
-
-
-            if(prevAccEventTimestampNanos == 0) {
+            if (prevAccEventTimestampNanos == 0) {
                 prevAccEventTimestampNanos = event.timestamp;
             } else {
                 averageAccSensorDelayMicros = (numAccSamples * averageAccSensorDelayMicros + (event.timestamp - prevAccEventTimestampNanos)) / (numAccSamples + 1);
                 prevAccEventTimestampNanos = event.timestamp;
             }
             numAccSamples++;
+        } else if (event.sensor.getType() == TYPE_GRAVITY) {
+            gravityX = event.values[0];
+            gravityY = event.values[1];
+            gravityZ = event.values[2];
         } else if (event.sensor.getType() == TYPE_GYROSCOPE) {
             xRotation.add((double) event.values[0]);
             yRotation.add((double) event.values[1]);
@@ -412,7 +464,7 @@ public class TremorMonitor implements SensorEventListener {
             rotation.add(getVectorMagnitude(event.values[0], event.values[1], event.values[2]));
 
 
-            if(prevGyroEventTimestampNanos == 0) {
+            if (prevGyroEventTimestampNanos == 0) {
                 prevGyroEventTimestampNanos = event.timestamp;
             } else {
                 averageGyroSensorDelayMicros = (numGyroSamples * averageGyroSensorDelayMicros + (event.timestamp - prevGyroEventTimestampNanos)) / (numGyroSamples + 1);

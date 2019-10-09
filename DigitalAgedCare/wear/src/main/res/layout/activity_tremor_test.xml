@@ -9,30 +9,60 @@
 
     <Button
         android:id="@+id/printTremorDbButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="32dp"
+        android:layout_width="64dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="24dp"
         android:onClick="onClickPrintTremorDatabaseButton"
-        android:text="Print Tremor DB"
+        android:text="Print DB"
+        android:textSize="8sp"
+        app:layout_constraintEnd_toStartOf="@+id/clearTremorDbButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clearTremorActivityLogButton" />
+
+    <Button
+        android:id="@+id/clearTremorDbButton"
+        android:layout_width="70dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="24dp"
+        android:onClick="onClickResetTremorDatabaseButton"
+        android:text="Clear DB"
+        android:textSize="8sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/printTremorDbButton"
+        app:layout_constraintTop_toBottomOf="@+id/clearTremorActivityLogButton" />
+
+    <TextView
+        android:id="@+id/tremorActivityLogTextView"
+        android:layout_width="137dp"
+        android:layout_height="97dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:editable="true"
+        android:inputType="textMultiLine"
+        android:scrollbarAlwaysDrawHorizontalTrack="false"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollHorizontally="false"
+        android:text="Tremor Severity: Updating..."
+        android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/clearTremorDbButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
-        android:onClick="onClickResetTremorDatabaseButton"
-        android:text="Clear Tremor DB"
+        android:id="@+id/clearTremorActivityLogButton"
+        android:layout_width="58dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Clear"
+        android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/printTremorDbButton" />
+        app:layout_constraintTop_toBottomOf="@+id/tremorActivityLogTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
