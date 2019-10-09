@@ -47,9 +47,31 @@ public class TremorTestActivity extends WearableActivity {
         tremorActivityLogTextView = (TextView) findViewById(R.id.tremorActivityLogTextView);
     }
 
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        try {
+//            TremorMonitor.getInstance(this.getApplicationContext()).start();
+//        } catch (NullContextException e) {
+//            Log.e(LOG_TAG, "Failed to start tremor monitoring, " + e.getMessage());
+//        }
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        try {
+//            TremorMonitor.getInstance(this.getApplicationContext()).stop();
+//        } catch (NullContextException e) {
+//            Log.e(LOG_TAG, "Failed to stop tremor monitoring, " + e.getMessage());
+//        }
+//    }
+
+
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+
         try {
             TremorMonitor.getInstance(this.getApplicationContext()).start();
         } catch (NullContextException e) {
@@ -95,28 +117,6 @@ public class TremorTestActivity extends WearableActivity {
                 }
             }
         }, 5, 1, TimeUnit.SECONDS);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            TremorMonitor.getInstance(this.getApplicationContext()).stop();
-        } catch (NullContextException e) {
-            Log.e(LOG_TAG, "Failed to stop tremor monitoring, " + e.getMessage());
-        }
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        try {
-            TremorMonitor.getInstance(this.getApplicationContext()).start();
-        } catch (NullContextException e) {
-            Log.e(LOG_TAG, "Failed to start tremor monitoring, " + e.getMessage());
-        }
     }
 
     @Override

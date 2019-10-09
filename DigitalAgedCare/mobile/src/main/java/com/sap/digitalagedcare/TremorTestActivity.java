@@ -48,9 +48,31 @@ public class TremorTestActivity extends AppCompatActivity {
         });
     }
 
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        try {
+//            TremorMonitor.getInstance(this.getApplicationContext()).start();
+//        } catch (NullContextException e) {
+//            Log.e(LOG_TAG, "Failed to start tremor monitoring, " + e.getMessage());
+//        }
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        try {
+//            TremorMonitor.getInstance(this.getApplicationContext()).stop();
+//        } catch (NullContextException e) {
+//            Log.e(LOG_TAG, "Failed to stop tremor monitoring, " + e.getMessage());
+//        }
+//    }
+
+
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+
         try {
             TremorMonitor.getInstance(this.getApplicationContext()).start();
         } catch (NullContextException e) {
@@ -96,28 +118,6 @@ public class TremorTestActivity extends AppCompatActivity {
                 }
             }
         }, 7, 1, TimeUnit.SECONDS);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            TremorMonitor.getInstance(this.getApplicationContext()).stop();
-        } catch (NullContextException e) {
-            Log.e(LOG_TAG, "Failed to stop tremor monitoring, " + e.getMessage());
-        }
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        try {
-            TremorMonitor.getInstance(this.getApplicationContext()).start();
-        } catch (NullContextException e) {
-            Log.e(LOG_TAG, "Failed to start tremor monitoring, " + e.getMessage());
-        }
     }
 
     @Override

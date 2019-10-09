@@ -69,6 +69,8 @@ public class TremorMonitor implements SensorEventListener {
 
     private static TremorMonitor instance = null;
 
+    private boolean monitorIsRunning = false;
+
     private TremorMonitor(Context appContext) throws NullContextException, NullSensorManagerException {
         if (appContext == null) {
             throw new NullContextException();
@@ -88,6 +90,72 @@ public class TremorMonitor implements SensorEventListener {
         sensorGyroscope = sensorManager.getDefaultSensor(TYPE_GYROSCOPE);
 
         detectionSampleTimer = new Timer();
+    }
+
+    private TremorSeverity getTremorSeverity(double frequency) {
+        if (frequency >= 7) {
+            return TremorSeverity.TREMOR_SEVERITY_5;
+        } else if (frequency >= 6) {
+            return TremorSeverity.TREMOR_SEVERITY_4;
+        } else if (frequency >= 5) {
+            return TremorSeverity.TREMOR_SEVERITY_3;
+        } else if (frequency >= 4) {
+            return TremorSeverity.TREMOR_SEVERITY_2;
+        } else if (frequency >= 3) {
+            return TremorSeverity.TREMOR_SEVERITY_1;
+        }
+
+        return TremorSeverity.TREMOR_SEVERITY_0;
+    }
+
+    public TremorDatabase getTremorDatabase() {
+        return tremorDatabase;
+    }
+
+    public TremorRecord getMostRecentTremorRecord() {
+        return tremorDatabase.tremorRecordDao().getMostRecentRecord();
+    }
+
+    public static TremorMonitor getInstance(Context appContext)
+            throws NullContextException, NullSensorManagerException {
+        if (instance == null) {
+            instance = new TremorMonitor(appContext);
+        }
+
+        return instance;
+    }
+
+    private void printInfo() {
+        Log.d(LOG_TAG, "SAMPLING_PERIOD_MILLISECONDS = " + SAMPLING_PERIOD_MILLISECONDS);
+        Log.d(LOG_TAG, "SENSOR_DELAY_MICROSECONDS = " + SENSOR_DELAY_MICROSECONDS);
+        Log.d(LOG_TAG, "MOVING_AVERAGE_FILTER_NUM_POINTS = " + MOVING_AVERAGE_FILTER_NUM_POINTS);
+        Log.d(LOG_TAG, "TREMOR_THRESHOLD_FREQUENCY_HERTZ = " + TREMOR_THRESHOLD_FREQUENCY_HERTZ);
+        Log.d(LOG_TAG, "SAMPLING_RATE_HERTZ = " + SAMPLING_RATE_HERTZ);
+        Log.d(LOG_TAG, "NUM_DATA_POINTS_PER_SAMPLE = " + NUM_DATA_POINTS_PER_SAMPLE);
+        Log.d(LOG_TAG, "FFT_SIZE = " + FFT_SIZE);
+    }
+
+    public void start() {
+        if (monitorIsRunning) {
+            return;
+        }
+//        sensorManager.registerListener(this,
+//                sensorAccelerometer,
+//                SENSOR_DELAY_MICROSECONDS);
+//        sensorManager.registerListener(this,
+//                sensorGyroscope,
+//                SENSOR_DELAY_MICROSECONDS);
+        sensorManager.registerListener(this,
+                sensorAccelerometer,
+                0);
+        sensorManager.registerListener(this,
+                sensorGravity,
+                0);
+//        sensorManager.registerListener(this,
+//                sensorGyroscope,
+//                0);
+
+        sampleStartTimestampMillis = System.currentTimeMillis();
         detectionSampleTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -95,6 +163,16 @@ public class TremorMonitor implements SensorEventListener {
 
                 Log.d(LOG_TAG, "Average Accelerometer Sensor Delay: " + averageAccSensorDelayMicros / 1000);
                 Log.d(LOG_TAG, "Average Gyroscope Sensor Delay: " + averageGyroSensorDelayMicros / 1000);
+
+                if ((xAcceleration.size() < 0.25 * NUM_DATA_POINTS_PER_SAMPLE)
+                        || (yAcceleration.size() < 0.25 * NUM_DATA_POINTS_PER_SAMPLE)
+                    || (zAcceleration.size() < 0.25 * NUM_DATA_POINTS_PER_SAMPLE)) {
+                    tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
+                            sampleEndTimestampMillis,
+                            TremorSeverity.TREMOR_SEVERITY_0));
+                    sampleStartTimestampMillis = sampleEndTimestampMillis;
+                    return;
+                }
 
                 if (xAcceleration.isEmpty() && yAcceleration.isEmpty() && zAcceleration.isEmpty() && acceleration.isEmpty()) {
                     tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
@@ -147,68 +225,6 @@ public class TremorMonitor implements SensorEventListener {
 
             }
         }, SAMPLING_PERIOD_MILLISECONDS, SAMPLING_PERIOD_MILLISECONDS);
-        sampleStartTimestampMillis = System.currentTimeMillis();
-    }
-
-    private TremorSeverity getTremorSeverity(double frequency) {
-        if (frequency >= 7) {
-            return TremorSeverity.TREMOR_SEVERITY_5;
-        } else if (frequency >= 6) {
-            return TremorSeverity.TREMOR_SEVERITY_4;
-        } else if (frequency >= 5) {
-            return TremorSeverity.TREMOR_SEVERITY_3;
-        } else if (frequency >= 4) {
-            return TremorSeverity.TREMOR_SEVERITY_2;
-        } else if (frequency >= 3) {
-            return TremorSeverity.TREMOR_SEVERITY_1;
-        }
-
-        return TremorSeverity.TREMOR_SEVERITY_0;
-    }
-
-    public TremorDatabase getTremorDatabase() {
-        return tremorDatabase;
-    }
-
-    public TremorRecord getMostRecentTremorRecord() {
-        return tremorDatabase.tremorRecordDao().getMostRecentRecord();
-    }
-
-    public static TremorMonitor getInstance(Context appContext)
-            throws NullContextException, NullSensorManagerException {
-        if (instance == null) {
-            instance = new TremorMonitor(appContext);
-        }
-
-        return instance;
-    }
-
-    private void printInfo() {
-        Log.d(LOG_TAG, "SAMPLING_PERIOD_MILLISECONDS = " + SAMPLING_PERIOD_MILLISECONDS);
-        Log.d(LOG_TAG, "SENSOR_DELAY_MICROSECONDS = " + SENSOR_DELAY_MICROSECONDS);
-        Log.d(LOG_TAG, "MOVING_AVERAGE_FILTER_NUM_POINTS = " + MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "TREMOR_THRESHOLD_FREQUENCY_HERTZ = " + TREMOR_THRESHOLD_FREQUENCY_HERTZ);
-        Log.d(LOG_TAG, "SAMPLING_RATE_HERTZ = " + SAMPLING_RATE_HERTZ);
-        Log.d(LOG_TAG, "NUM_DATA_POINTS_PER_SAMPLE = " + NUM_DATA_POINTS_PER_SAMPLE);
-        Log.d(LOG_TAG, "FFT_SIZE = " + FFT_SIZE);
-    }
-
-    public void start() {
-//        sensorManager.registerListener(this,
-//                sensorAccelerometer,
-//                SENSOR_DELAY_MICROSECONDS);
-//        sensorManager.registerListener(this,
-//                sensorGyroscope,
-//                SENSOR_DELAY_MICROSECONDS);
-        sensorManager.registerListener(this,
-                sensorAccelerometer,
-                0);
-        sensorManager.registerListener(this,
-                sensorGravity,
-                0);
-//        sensorManager.registerListener(this,
-//                sensorGyroscope,
-//                0);
         printInfo();
     }
 
@@ -384,6 +400,8 @@ public class TremorMonitor implements SensorEventListener {
         detectionSampleTimer.purge();
         sensorManager.unregisterListener(this, sensorAccelerometer);
         sensorManager.unregisterListener(this, sensorGyroscope);
+        monitorIsRunning = false;
+        instance = null;
     }
 
     private long prevAccEventTimestampNanos;
