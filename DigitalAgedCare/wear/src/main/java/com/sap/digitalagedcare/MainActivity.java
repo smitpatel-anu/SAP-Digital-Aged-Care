@@ -114,6 +114,7 @@ public class MainActivity extends WearableActivity {
             Bundle b = intent.getBundleExtra("Location");
             Location location = (Location) b.getParcelable("Location");
             if (location != null) {
+
                 locationTv.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
                 Log.i(TAG, "The Location is*:" + location.getLatitude() + " " + location.getLongitude());
             }
