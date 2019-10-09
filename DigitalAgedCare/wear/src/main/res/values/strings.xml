@@ -8,4 +8,7 @@
     <string name="title_activity_fall_detection">FallDetectionActivity</string>
     <string name="FD_Button">Fall Detection</string>
     <string name="welcome">Welcome!</string>
+    <string name="freefall">Free falling</string>
+    <string name="start_service">Start Service</string>
+    <string name="fall_detection_service">Fall Detection Service</string>
 </resources>

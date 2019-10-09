@@ -34,6 +34,7 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
     private Sensor myGyroscope;
     private Thread thread;
     private boolean bp = true;
+    private boolean ff = false;
     public MyLocationService locationService;
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
     private static Location currentLocation;
@@ -89,7 +90,12 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
 
             // free fall event
             if (acc<1f && bp) {
+                ff = true;
                 bp = false;
+                Toast.makeText(FallDetectionActivity.this, R.string.freefall,Toast.LENGTH_SHORT).show();
+            }
+            if (acc>20f && ff){
+                ff = false;
                 AlertDialog dialog=new AlertDialog.Builder(FallDetectionActivity.this)
                         .setIcon(R.mipmap.ic_launcher)
                         .setTitle("Fall Detected!")
