@@ -1,9 +1,11 @@
 package com.sap.digitalagedcare;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -88,7 +90,17 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
             // free fall event
             if (acc<1f && bp) {
                 bp = false;
-                Toast.makeText(FallDetectionActivity.this,"free fall\n"+"The Location is*:" + currentLocation.getLatitude() + " " + currentLocation.getLongitude(),Toast.LENGTH_SHORT).show();
+                AlertDialog dialog=new AlertDialog.Builder(FallDetectionActivity.this)
+                        .setIcon(R.mipmap.ic_launcher)
+                        .setTitle("Fall Detected!")
+                        .setMessage("The Location is:" + currentLocation.getLatitude() + " " + currentLocation.getLongitude())
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create();
+                dialog.show();
             }
             if (acc>3f && !bp) {
                 bp = true;
