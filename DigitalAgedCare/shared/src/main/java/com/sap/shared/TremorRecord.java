@@ -5,6 +5,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
 @SuppressWarnings("all")
 @Entity(tableName = "tremor_records")
 public class TremorRecord {
@@ -46,6 +48,21 @@ public class TremorRecord {
         this.startTimestamp = startTimestamp;
         this.endTimestamp = endTimestamp;
         this.tremorSeverity = tremorSeverity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TremorRecord that = (TremorRecord) o;
+        return startTimestamp == that.startTimestamp &&
+                endTimestamp == that.endTimestamp &&
+                tremorSeverity == that.tremorSeverity;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startTimestamp, endTimestamp, tremorSeverity);
     }
 
     @Override

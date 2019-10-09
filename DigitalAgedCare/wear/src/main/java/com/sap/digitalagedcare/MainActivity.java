@@ -9,19 +9,20 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 
 public class MainActivity extends WearableActivity {
+
 
     private TextView locationTv;
     public MyLocationService locationService;
@@ -29,58 +30,66 @@ public class MainActivity extends WearableActivity {
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
     //public static final int MY_PERMISSIONS_REQUEST_COARSE_LOCATION = 102;
 
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        locationTv = findViewById(R.id.location);
-        hasPermission(this);
-        if (!hasPermission(this)) {
+        if (hasPermission(this)) {
+            final Intent intent = new Intent(this.getApplication(), MyLocationService.class);
+            this.getApplication().startService(intent);
+            this.getApplication().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(
+                    mMessageReceiver, new IntentFilter("GPSLocationUpdates"));
+        } else {
             Log.e(TAG, "Permission denied!");
-            return;
         }
 
+        Button tremorTestActivityButton = (Button) findViewById(R.id.tremorTestActivityButton);
+        tremorTestActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.startActivity(new Intent(MainActivity.this, TremorTestActivity.class));
+            }
+        });
 
-        final Intent intent = new Intent(this.getApplication(), MyLocationService.class);
-        this.getApplication().startService(intent);
-        this.getApplication().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(
-                mMessageReceiver, new IntentFilter("GPSLocationUpdates"));
-
+        Button fallDetectionActivityButton = (Button) findViewById(R.id.fallDetectionActivityButton);
+        fallDetectionActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.startActivity(new Intent(MainActivity.this, FallDetectionActivity.class));
+            }
+        });
 
         // Enables Always-on
         setAmbientEnabled();
     }
 
-
     /**
-     *Check the permission request result
+     * Check the permission request result
+     *
      * @param context
      * @return True if user allow the location service
      */
-    boolean hasPermission(Context context){
+    boolean hasPermission(Context context) {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
 
-            }//return false;
         }
         return true;
     }
 
-
-
     /**
-     *monitoring the state of MyLocationService.
+     * monitoring the state of MyLocationService.
      */
     private ServiceConnection serviceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -96,7 +105,7 @@ public class MainActivity extends WearableActivity {
     };
 
     /**
-     *receive an intent message from another class
+     * receive an intent message from another class
      */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -107,8 +116,26 @@ public class MainActivity extends WearableActivity {
             if (location != null) {
 
                 locationTv.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
-                Log.i(TAG, "The Location is*:" +location.getLatitude() + " " + location.getLongitude());
+                Log.i(TAG, "The Location is*:" + location.getLatitude() + " " + location.getLongitude());
             }
         }
     };
+
+    public void onClickTremorTestActivityButton(View view) {
+        startActivity(new Intent(MainActivity.this, TremorTestActivity.class));
+    }
+
+    /**
+     * Check if the device has gps feature
+     *
+     * @return True if gps available
+     */
+    boolean hasGps() {
+        return getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+    }
+
+    public void openActivity() {
+        Intent intent = new Intent(this, FallDetectionActivity.class);
+        startActivity(intent);
+    }
 }

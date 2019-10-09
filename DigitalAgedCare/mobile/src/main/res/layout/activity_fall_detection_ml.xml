@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="FallDetectionActivity_ML">
+
+    <TextView
+        android:id="@+id/textViewX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/x"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="@+id/textViewAcc"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAcc" />
+
+    <TextView
+        android:id="@+id/textViewY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/y"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="@+id/textViewX"
+        app:layout_constraintTop_toBottomOf="@+id/textViewX" />
+
+    <TextView
+        android:id="@+id/textViewZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/z"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="@+id/textViewY"
+        app:layout_constraintTop_toBottomOf="@+id/textViewY" />
+
+    <TextView
+        android:id="@+id/textViewGyroX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/x"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="@+id/textViewGyro"
+        app:layout_constraintTop_toBottomOf="@+id/textViewGyro" />
+
+    <TextView
+        android:id="@+id/textViewGyroY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/y"
+        android:textSize="28sp"
+        app:layout_constraintLeft_toLeftOf="@id/textViewGyroX"
+        app:layout_constraintTop_toBottomOf="@+id/textViewGyroX" />
+
+    <TextView
+        android:id="@+id/textViewGyroZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/z"
+        android:textSize="28sp"
+        app:layout_constraintLeft_toLeftOf="@id/textViewGyroY"
+        app:layout_constraintTop_toBottomOf="@+id/textViewGyroY" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewAcc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginLeft="64dp"
+        android:layout_marginTop="24dp"
+        android:textSize="24dp"
+        android:text="Acc:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lineChart" />
+
+    <TextView
+        android:id="@+id/textViewGyro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="64dp"
+        android:text="Gyro:"
+        android:textSize="24dp"
+        app:layout_constraintLeft_toRightOf="@id/textViewAcc"
+        app:layout_constraintTop_toTopOf="@id/textViewAcc" />
+
+</android.support.constraint.ConstraintLayout>
