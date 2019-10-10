@@ -295,7 +295,7 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
     }
 
     private void sendSMS(){
-        String messageToSend = "Warning message:\nFall detected for the Digital Aged Care user!";
+        String messageToSend = "Warning message:\nFall detected for the Digital Aged Care user!\nFrom: Iron man";
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
         SmsManager.getDefault().sendTextMessage(number, null, messageToSend, null,null);
