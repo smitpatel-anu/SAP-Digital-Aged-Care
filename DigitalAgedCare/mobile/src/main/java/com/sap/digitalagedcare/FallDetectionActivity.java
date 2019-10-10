@@ -271,6 +271,8 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
                     public void onFinish() {
                         if (((AlertDialog) dialog).isShowing()) {
                             dialog.dismiss();
+                            dialogSending();
+                            sendSMS();
                         }
                     }
                 }.start();
@@ -279,8 +281,21 @@ public class FallDetectionActivity extends AppCompatActivity implements SensorEv
         dialog.show();
     }
 
+    private void dialogSending(){
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Asking for help!")
+                .setMessage("Sending SMS to emergency contact...")
+                .setPositiveButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+    }
+
     private void sendSMS(){
-        String messageToSend = "Warning message: fall detected for the Digital Aged Care user!";
+        String messageToSend = "Warning message:\nFall detected for the Digital Aged Care user!";
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
         SmsManager.getDefault().sendTextMessage(number, null, messageToSend, null,null);
