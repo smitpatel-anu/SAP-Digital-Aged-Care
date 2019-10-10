@@ -23,11 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
-
-import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-public class FallDetectionActivity extends WearableActivity implements SensorEventListener {
+public class FallDetectionActivity extends WearableActivity implements SensorEventListener{
 
     private SensorManager mySensorManager;
     private Sensor myAccelerometer;
@@ -35,8 +33,8 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
     private Thread thread;
     private boolean bp = true;
     public MyLocationService locationService;
-    public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
-    private static Location currentLocation;
+    private static CurrentLocation currentLocation;
+
 
 
     private final static String TAG = FallDetectionActivity.class.getSimpleName();
@@ -45,6 +43,8 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fall_detection);
+        currentLocation=new CurrentLocation();
+
         final Intent intent = new Intent(this.getApplication(), MyLocationService.class);
         this.getApplication().startService(intent);
         this.getApplication().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -66,7 +66,6 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
         Log.d(TAG, "onCreate: Accelerometer listener is registered.");
         mySensorManager.registerListener(FallDetectionActivity.this, myGyroscope, mySensorManager.SENSOR_DELAY_NORMAL);
         Log.d(TAG, "onCreate: Gyroscope listener is registered.");
-
 
         // Enables Always-on
         setAmbientEnabled();
@@ -141,9 +140,10 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
             Bundle b = intent.getBundleExtra("Location");
             Location location = (Location) b.getParcelable("Location");
             if (location != null) {
-                currentLocation=location;
-                Log.i(TAG, "The Location is*:" + location.getLatitude() + " " + location.getLongitude());
+                currentLocation.SetLocation(location);
+                Log.i(TAG, "The Location is*:" + currentLocation.getLatitude() + " " + currentLocation.getLongitude());
             }
         }
     };
+
 }
