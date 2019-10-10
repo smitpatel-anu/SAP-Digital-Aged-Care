@@ -146,4 +146,9 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
         }
     };
 
+    /*@Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }*/
 }

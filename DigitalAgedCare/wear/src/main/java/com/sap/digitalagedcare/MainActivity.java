@@ -19,7 +19,6 @@ public class MainActivity extends WearableActivity {
     private static final String TAG = "MainActivity";
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
 
-    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,21 +70,4 @@ public class MainActivity extends WearableActivity {
         return true;
     }
 
-    public void onClickTremorTestActivityButton(View view) {
-        startActivity(new Intent(MainActivity.this, TremorTestActivity.class));
-    }
-
-    /**
-     * Check if the device has gps feature
-     *
-     * @return True if gps available
-     */
-    boolean hasGps() {
-        return getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-    }
-
-    public void openActivity() {
-        Intent intent = new Intent(this, FallDetectionActivity.class);
-        startActivity(intent);
-    }
 }
