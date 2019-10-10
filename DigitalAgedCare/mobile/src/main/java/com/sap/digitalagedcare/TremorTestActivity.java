@@ -119,7 +119,7 @@ public class TremorTestActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        }, 7, 1, TimeUnit.SECONDS);
+        }, 4, 1, TimeUnit.SECONDS);
     }
 
     @Override

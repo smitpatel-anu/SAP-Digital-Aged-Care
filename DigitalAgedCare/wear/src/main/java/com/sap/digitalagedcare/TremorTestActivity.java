@@ -116,7 +116,7 @@ public class TremorTestActivity extends WearableActivity {
                     e.printStackTrace();
                 }
             }
-        }, 5, 1, TimeUnit.SECONDS);
+        }, 4, 1, TimeUnit.SECONDS);
     }
 
     @Override
