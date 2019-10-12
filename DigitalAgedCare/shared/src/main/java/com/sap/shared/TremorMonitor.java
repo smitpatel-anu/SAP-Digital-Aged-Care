@@ -1,10 +1,14 @@
 package com.sap.shared;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.room.Room;
@@ -15,6 +19,7 @@ import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +50,8 @@ public class TremorMonitor implements SensorEventListener {
     // find nearest power of 2 greater than number of data points per sample
     private static final int FFT_SIZE = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(NUM_DATA_POINTS_PER_SAMPLE - 1));
 
+    private static final long TREMOR_DATA_REQUEST_REPEATING_ALARM_INTERVAL = 2 * AlarmManager.INTERVAL_HOUR;
+
     private final SensorManager sensorManager;
     private final Sensor sensorAccelerometer;
     private final Sensor sensorGravity;
@@ -67,20 +74,27 @@ public class TremorMonitor implements SensorEventListener {
     private final ArrayList<Double> acceleration = new ArrayList<>();
     private final ArrayList<Double> rotation = new ArrayList<>();
 
+    private PendingIntent tremorDataRequestPendingIntent;
+    private AlarmManager alarmManager;
+
+    private WeakReference<Context> appContext;
+
     private static TremorMonitor instance = null;
 
     private boolean monitorIsRunning = false;
 
-    private TremorMonitor(Context appContext) throws NullContextException, NullSensorManagerException {
-        if (appContext == null) {
+    private TremorMonitor(Context applicationContext) throws NullContextException, NullSensorManagerException {
+        if (applicationContext == null) {
             throw new NullContextException();
         }
 
-        this.tremorDatabase = Room.databaseBuilder(appContext,
+        this.appContext = new WeakReference<Context>(applicationContext);
+
+        this.tremorDatabase = Room.databaseBuilder(appContext.get(),
                 TremorDatabase.class,
                 "tremor-database").build();
 
-        sensorManager = (SensorManager) appContext.getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = (SensorManager) appContext.get().getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager == null) {
             throw new NullSensorManagerException();
         }
@@ -92,7 +106,20 @@ public class TremorMonitor implements SensorEventListener {
         detectionSampleTimer = new Timer();
     }
 
-    private TremorSeverity getTremorSeverity(double frequency) {
+    protected void sendTremorData() {
+        Log.d(LOG_TAG, "Sending tremor data...");
+    }
+
+    protected void startRepeatingTremorAlarm() {
+        Intent tremorDataRequestAlarmIntent = new Intent(appContext.get(), TremorRequestAlarmReceiver.class);
+        tremorDataRequestPendingIntent = PendingIntent.getBroadcast(appContext.get(), 0, tremorDataRequestAlarmIntent, 0);
+        alarmManager = (AlarmManager) appContext.get().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + 10000,
+                10000, tremorDataRequestPendingIntent);
+    }
+
+    private TremorSeverity calculateTremorSeverity(double frequency) {
         if (frequency >= 7) {
             return TremorSeverity.TREMOR_SEVERITY_5;
         } else if (frequency >= 6) {
@@ -139,6 +166,10 @@ public class TremorMonitor implements SensorEventListener {
         if (monitorIsRunning) {
             return;
         }
+
+        sendTremorData();
+        startRepeatingTremorAlarm();
+
 //        sensorManager.registerListener(this,
 //                sensorAccelerometer,
 //                SENSOR_DELAY_MICROSECONDS);
@@ -166,7 +197,7 @@ public class TremorMonitor implements SensorEventListener {
 
                 if ((xAcceleration.size() < 0.25 * NUM_DATA_POINTS_PER_SAMPLE)
                         || (yAcceleration.size() < 0.25 * NUM_DATA_POINTS_PER_SAMPLE)
-                    || (zAcceleration.size() < 0.25 * NUM_DATA_POINTS_PER_SAMPLE)) {
+                        || (zAcceleration.size() < 0.25 * NUM_DATA_POINTS_PER_SAMPLE)) {
                     tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
                             sampleEndTimestampMillis,
                             TremorSeverity.TREMOR_SEVERITY_0));
@@ -206,7 +237,7 @@ public class TremorMonitor implements SensorEventListener {
 
 //                double maxDominantFrequency = Math.max(accelerometerDominantFrequency, gyroscopeDominantFrequency);
                 double maxDominantFrequency = Math.max(accelerometerDominantFrequency, 0);
-                TremorSeverity tremorSeverity = getTremorSeverity(maxDominantFrequency);
+                TremorSeverity tremorSeverity = calculateTremorSeverity(maxDominantFrequency);
                 tremorDatabase.tremorRecordDao().insert(new TremorRecord(sampleStartTimestampMillis,
                         sampleEndTimestampMillis,
                         tremorSeverity));
