@@ -15,20 +15,40 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "MainActivity";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // start tremor test activity
         Button tremorTestActivityButton = (Button)findViewById(R.id.tremorTestActivityButton);
-
         tremorTestActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, TremorTestActivity.class));
             }
         });
+
+        // start fall detection test activity
+        Button fallDetectionActivityButton = findViewById(R.id.fallDetectionActivityButton);
+        fallDetectionActivityButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, FallDetectionActivity.class));
+            }
+        });
+
+        // start GPS test activity
+        Button gpsActivityButton = findViewById(R.id.GPSActivityButton);
+        gpsActivityButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, GPSActivity.class));
+            }
+        });
     }
+
 
 //    @Override
 //    protected void onStart() {

@@ -3,13 +3,12 @@ package com.sap.digitalagedcare;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.wearable.activity.WearableActivity;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.sap.shared.NullContextException;
 import com.sap.shared.TremorDatabase;
@@ -25,7 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TremorTestActivity extends AppCompatActivity {
+public class TremorTestActivity extends WearableActivity {
 
     private static final String LOG_TAG = "TremorTestActivity";
 
@@ -37,8 +36,6 @@ public class TremorTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tremor_test);
 
-        tremorActivityLogTextView = (TextView) findViewById(R.id.tremorActivityLogTextView);
-
         Button clearTremorActivityLogButton = (Button) findViewById(R.id.clearTremorActivityLogButton);
         clearTremorActivityLogButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +43,8 @@ public class TremorTestActivity extends AppCompatActivity {
                 tremorActivityLogTextView.setText("");
             }
         });
+
+        tremorActivityLogTextView = (TextView) findViewById(R.id.tremorActivityLogTextView);
     }
 
 //    @Override
@@ -79,47 +78,43 @@ public class TremorTestActivity extends AppCompatActivity {
             Log.e(LOG_TAG, "Failed to start tremor monitoring, " + e.getMessage());
         }
 
-        tremorActivityLogTextView.setText("Starting Tremor Monitor...");
-        TremorMonitor tremorMonitor = null;
-        try {
-            tremorMonitor = TremorMonitor.getInstance(getApplicationContext());
-        } catch (NullContextException e) {
-            e.printStackTrace();
-        }
-
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
-        final TremorMonitor finalTremorMonitor = tremorMonitor;
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                final TremorRecord mostRecentTremorRecord = finalTremorMonitor.getMostRecentTremorRecord();
-                if (mostRecentTremorRecord == null) {
-                    return;
-                }
-                if (currentTremorRecord == null) {
-                    currentTremorRecord = mostRecentTremorRecord;
-                } else if (currentTremorRecord.equals(mostRecentTremorRecord)) {
-                    return;
-                }
-
-                currentTremorRecord = mostRecentTremorRecord;
-
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-                String dateString = dateFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
-
-                DateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
-                String startTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
-                String endTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.endTimestamp));
-
-                String tremorSeverityString = "Tremor Severity: " + mostRecentTremorRecord.getTremorSeverity().ordinal();
-
-                final String tremorActivityString = startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
-
-                TremorTestActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((Editable) tremorActivityLogTextView.getText()).insert(0, tremorActivityString);
+                try {
+                    TremorMonitor tremorMonitor = TremorMonitor.getInstance(TremorTestActivity.this.getApplicationContext());
+                    final TremorRecord mostRecentTremorRecord = tremorMonitor.getMostRecentTremorRecord();
+                    if (mostRecentTremorRecord == null) {
+                        return;
                     }
-                });
+
+                    if (currentTremorRecord == null) {
+                        currentTremorRecord = mostRecentTremorRecord;
+                    } else if (currentTremorRecord.equals(mostRecentTremorRecord)) {
+                        return;
+                    }
+
+                    currentTremorRecord = mostRecentTremorRecord;
+
+                    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+                    String dateString = dateFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
+
+                    DateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
+                    String startTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
+                    String endTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.endTimestamp));
+
+                    String tremorSeverityString = "Severity: " + mostRecentTremorRecord.getTremorSeverity().ordinal();
+
+                    final String tremorActivityString = startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
+                    TremorTestActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((Editable) tremorActivityLogTextView.getText()).insert(0, tremorActivityString);
+                        }
+                    });
+                } catch (NullContextException e) {
+                    e.printStackTrace();
+                }
             }
         }, 4, 1, TimeUnit.SECONDS);
     }
