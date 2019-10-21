@@ -3,6 +3,7 @@
     package="com.sap.shared">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
         <receiver

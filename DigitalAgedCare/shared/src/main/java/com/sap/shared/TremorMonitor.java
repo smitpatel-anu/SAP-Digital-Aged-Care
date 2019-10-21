@@ -13,16 +13,27 @@ import android.util.Log;
 
 import androidx.room.Room;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,6 +62,8 @@ public class TremorMonitor implements SensorEventListener {
     private static final int FFT_SIZE = (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(NUM_DATA_POINTS_PER_SAMPLE - 1));
 
     private static final long TREMOR_DATA_REQUEST_REPEATING_ALARM_INTERVAL = 2 * AlarmManager.INTERVAL_HOUR;
+
+    private static final String ENDPOINT_URL = "https://postb.in/1571692086916-7935988565441";
 
     private final SensorManager sensorManager;
     private final Sensor sensorAccelerometer;
@@ -107,7 +120,42 @@ public class TremorMonitor implements SensorEventListener {
     }
 
     protected void sendTremorData() {
-        Log.d(LOG_TAG, "Sending tremor data...");
+        Log.d(LOG_TAG, "Sending tremor data");
+
+        RequestQueue queue = Volley.newRequestQueue(appContext.get());
+        JSONArray payload = new JSONArray();
+
+        // Get all tremor records from database
+        List<TremorRecord> tremorRecords = tremorDatabase.tremorRecordDao().getAll();
+
+        for(TremorRecord tremorRecord : tremorRecords) {
+            try {
+                payload.put(tremorRecord.toJSONObject());
+            } catch (JSONException e) {
+                Log.d(LOG_TAG, String.format("Failed to insert tremor data to http request for record (%s, %s, %s)",
+                        tremorRecord.startTimestamp,
+                        tremorRecord.endTimestamp,
+                        tremorRecord.tremorSeverity));
+            }
+        }
+
+        // Request a string response from the provided URL.
+        JsonArrayRequest tremorDataRequest = new JsonArrayRequest(Request.Method.POST,
+                ENDPOINT_URL,
+                payload,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+
+        queue.add(tremorDataRequest);
     }
 
     protected void startRepeatingTremorAlarm() {
@@ -166,6 +214,7 @@ public class TremorMonitor implements SensorEventListener {
         if (monitorIsRunning) {
             return;
         }
+        monitorIsRunning = true;
 
         sendTremorData();
         startRepeatingTremorAlarm();

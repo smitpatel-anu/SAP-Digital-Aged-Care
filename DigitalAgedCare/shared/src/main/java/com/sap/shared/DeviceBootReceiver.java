@@ -8,7 +8,8 @@ public class DeviceBootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+        if (intent.getAction() != null &&
+                intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             // Start repeating alarm to periodically send tremor data
             try {
                 TremorMonitor.getInstance(context.getApplicationContext()).startRepeatingTremorAlarm();

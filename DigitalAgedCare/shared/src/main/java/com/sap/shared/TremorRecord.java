@@ -5,11 +5,18 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Objects;
 
 @SuppressWarnings("all")
 @Entity(tableName = "tremor_records")
 public class TremorRecord {
+    private static final String JSON_KEY_START_TIMESTAMP = "startTimestamp";
+    private static final String JSON_KEY_END_TIMESTAMP = "endTimestamp";
+    private static final String JSON_KEY_TREMOR_SEVERITY = "tremorSeverity";
+
     @PrimaryKey
     @ColumnInfo(name = "start_timestamp")
     public long startTimestamp;
@@ -80,5 +87,12 @@ public class TremorRecord {
                 .append(tremorSeverity.ordinal())
                 .append("}")
                 .toString();
+    }
+
+    JSONObject toJSONObject() throws JSONException {
+        return new JSONObject()
+                .put(JSON_KEY_START_TIMESTAMP, startTimestamp)
+                .put(JSON_KEY_END_TIMESTAMP, endTimestamp)
+                .put(JSON_KEY_TREMOR_SEVERITY, tremorSeverity);
     }
 }
