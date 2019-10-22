@@ -132,6 +132,10 @@ public class TremorMonitor implements SensorEventListener {
 
                 // Get all tremor records from database
                 List<TremorRecord> tremorRecords = tremorDatabase.tremorRecordDao().getAll();
+                if(tremorRecords == null || tremorRecords.isEmpty()) {
+                    Log.d(LOG_TAG, "No tremor data to send (database is empty). Exiting");
+                    return;
+                }
 
                 for (TremorRecord tremorRecord : tremorRecords) {
                     try {
