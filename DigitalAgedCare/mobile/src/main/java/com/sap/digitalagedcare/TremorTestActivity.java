@@ -80,44 +80,46 @@ public class TremorTestActivity extends AppCompatActivity {
         }
 
         tremorActivityLogTextView.setText("Starting Tremor Monitor...");
+        TremorMonitor tremorMonitor = null;
+        try {
+            tremorMonitor = TremorMonitor.getInstance(getApplicationContext());
+        } catch (NullContextException e) {
+            e.printStackTrace();
+        }
 
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
+        final TremorMonitor finalTremorMonitor = tremorMonitor;
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                try {
-                    TremorMonitor tremorMonitor = TremorMonitor.getInstance(TremorTestActivity.this.getApplicationContext());
-                    final TremorRecord mostRecentTremorRecord = tremorMonitor.getMostRecentTremorRecord();
-                    if (mostRecentTremorRecord == null) {
-                        return;
-                    }
-                    if (currentTremorRecord == null) {
-                        currentTremorRecord = mostRecentTremorRecord;
-                    } else if (currentTremorRecord.equals(mostRecentTremorRecord)) {
-                        return;
-                    }
-
-                    currentTremorRecord = mostRecentTremorRecord;
-
-                    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-                    String dateString = dateFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
-
-                    DateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
-                    String startTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
-                    String endTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.endTimestamp));
-
-                    String tremorSeverityString = "Tremor Severity: " + mostRecentTremorRecord.getTremorSeverity().ordinal();
-
-                    final String tremorActivityString = startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
-
-                    TremorTestActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((Editable) tremorActivityLogTextView.getText()).insert(0, tremorActivityString);
-                        }
-                    });
-                } catch (NullContextException e) {
-                    e.printStackTrace();
+                final TremorRecord mostRecentTremorRecord = finalTremorMonitor.getMostRecentTremorRecord();
+                if (mostRecentTremorRecord == null) {
+                    return;
                 }
+                if (currentTremorRecord == null) {
+                    currentTremorRecord = mostRecentTremorRecord;
+                } else if (currentTremorRecord.equals(mostRecentTremorRecord)) {
+                    return;
+                }
+
+                currentTremorRecord = mostRecentTremorRecord;
+
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+                String dateString = dateFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
+
+                DateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
+                String startTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.startTimestamp));
+                String endTimeString = timeFormatter.format(new Date(mostRecentTremorRecord.endTimestamp));
+
+                String tremorSeverityString = "Tremor Severity: " + mostRecentTremorRecord.getTremorSeverity().ordinal();
+
+                final String tremorActivityString = startTimeString + "-" + endTimeString + " - " + tremorSeverityString + "\n";
+
+                TremorTestActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((Editable) tremorActivityLogTextView.getText()).insert(0, tremorActivityString);
+                    }
+                });
             }
         }, 4, 1, TimeUnit.SECONDS);
     }

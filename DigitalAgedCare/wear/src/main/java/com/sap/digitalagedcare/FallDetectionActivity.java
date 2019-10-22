@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-public class FallDetectionActivity extends WearableActivity implements SensorEventListener {
+public class FallDetectionActivity extends WearableActivity implements SensorEventListener{
 
     private SensorManager mySensorManager;
     private Sensor myAccelerometer;
@@ -49,7 +49,7 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fall_detection);
-        currentLocation= new CurrentLocation();
+        currentLocation=new CurrentLocation();
 
         final Intent intent = new Intent(this.getApplication(), MyLocationService.class);
         this.getApplication().startService(intent);
@@ -73,7 +73,6 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
         mySensorManager.registerListener(FallDetectionActivity.this, myGyroscope, mySensorManager.SENSOR_DELAY_NORMAL);
         Log.d(TAG, "onCreate: Gyroscope listener is registered.");
 
-
         // Enables Always-on
         setAmbientEnabled();
     }
@@ -92,6 +91,7 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
 
             // record data
 
+
             // free fall event
             if (acc<1f && bp) {
                 ff = true;
@@ -101,24 +101,63 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
 
             if (acc>20f && ff){
                 ff = false;
-                AlertDialog dialog=new AlertDialog.Builder(FallDetectionActivity.this)
-                        .setIcon(R.mipmap.ic_launcher)
-                        .setTitle("Fall Detected!")
-                        .setMessage("The Location is:" + currentLocation.getLatitude() + " " + currentLocation.getLongitude())
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).create();
-                dialog.show();
+                openDialog();
             }
             if (acc>3f && !bp) {
                 bp = true;
             }
         }
+    }
 
-
+    private void openDialog(){
+//        AlertDialog dialog=new AlertDialog.Builder(FallDetectionActivity.this)
+//                .setIcon(R.mipmap.ic_launcher)
+//                .setTitle("Fall Detected!")
+//                .setMessage(currentLocation!=null?"The Location is:" + currentLocation.getLatitude() + " " + currentLocation.getLongitude():"Null Location")
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                }).create();
+//        dialog.show();
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setIcon(R.mipmap.ic_launcher)
+//                .setTitle("Fall Detected!")
+                .setMessage(currentLocation!=null?"Fall Detected! The Location is:" + currentLocation.getLatitude() + " " + currentLocation.getLongitude():"Fall Detected! Location Unknown")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+//                        sendSMS();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            private static final int AUTO_DISMISS_MILLIS = 10000;
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                final Button defaultButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                final CharSequence negativeButtonText = defaultButton.getText();
+                new CountDownTimer(AUTO_DISMISS_MILLIS, 100) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        defaultButton.setText(String.format(
+                                Locale.getDefault(), "%s (%d)",
+                                negativeButtonText,
+                                TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) + 1 //add one so it never displays zero
+                        ));
+                    }
+                    @Override
+                    public void onFinish() {
+                        if (((AlertDialog) dialog).isShowing()) {
+                            dialog.dismiss();
+                        }
+                    }
+                }.start();
+            }
+        });
+        dialog.show();
     }
 
     @Override
