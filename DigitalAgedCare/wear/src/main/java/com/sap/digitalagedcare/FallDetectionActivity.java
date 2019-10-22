@@ -16,16 +16,22 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-public class FallDetectionActivity extends WearableActivity implements SensorEventListener{
+public class FallDetectionActivity extends WearableActivity implements SensorEventListener {
 
     private SensorManager mySensorManager;
     private Sensor myAccelerometer;
@@ -37,14 +43,13 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
     private static CurrentLocation currentLocation;
 
 
-
     private final static String TAG = FallDetectionActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fall_detection);
-        currentLocation=new CurrentLocation();
+        currentLocation= new CurrentLocation();
 
         final Intent intent = new Intent(this.getApplication(), MyLocationService.class);
         this.getApplication().startService(intent);
@@ -68,6 +73,7 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
         mySensorManager.registerListener(FallDetectionActivity.this, myGyroscope, mySensorManager.SENSOR_DELAY_NORMAL);
         Log.d(TAG, "onCreate: Gyroscope listener is registered.");
 
+
         // Enables Always-on
         setAmbientEnabled();
     }
@@ -86,13 +92,13 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
 
             // record data
 
-
             // free fall event
             if (acc<1f && bp) {
                 ff = true;
                 bp = false;
                 Toast.makeText(FallDetectionActivity.this, R.string.freefall,Toast.LENGTH_SHORT).show();
             }
+
             if (acc>20f && ff){
                 ff = false;
                 AlertDialog dialog=new AlertDialog.Builder(FallDetectionActivity.this)
@@ -151,10 +157,4 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
             }
         }
     };
-
-    /*@Override
-    protected void onDestroy() {
-        super.onDestroy();
-        finish();
-    }*/
 }
