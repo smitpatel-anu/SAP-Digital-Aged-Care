@@ -18,7 +18,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -36,6 +35,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static android.hardware.Sensor.TYPE_ACCELEROMETER;
 import static android.hardware.Sensor.TYPE_GRAVITY;
@@ -63,7 +64,7 @@ public class TremorMonitor implements SensorEventListener {
 
     private static final long TREMOR_DATA_REQUEST_REPEATING_ALARM_INTERVAL = 2 * AlarmManager.INTERVAL_HOUR;
 
-    private static final String ENDPOINT_URL = "https://postb.in/1571692086916-7935988565441";
+    private static final String ENDPOINT_URL = "https://w4y6k.mocklab.io";
 
     private final SensorManager sensorManager;
     private final Sensor sensorAccelerometer;
@@ -96,6 +97,8 @@ public class TremorMonitor implements SensorEventListener {
 
     private boolean monitorIsRunning = false;
 
+    private final ExecutorService tremorMonitorExecutor = Executors.newSingleThreadExecutor();
+
     private TremorMonitor(Context applicationContext) throws NullContextException, NullSensorManagerException {
         if (applicationContext == null) {
             throw new NullContextException();
@@ -121,41 +124,58 @@ public class TremorMonitor implements SensorEventListener {
 
     protected void sendTremorData() {
         Log.d(LOG_TAG, "Sending tremor data");
-
-        RequestQueue queue = Volley.newRequestQueue(appContext.get());
-        JSONArray payload = new JSONArray();
-
-        // Get all tremor records from database
-        List<TremorRecord> tremorRecords = tremorDatabase.tremorRecordDao().getAll();
-
-        for(TremorRecord tremorRecord : tremorRecords) {
-            try {
-                payload.put(tremorRecord.toJSONObject());
-            } catch (JSONException e) {
-                Log.d(LOG_TAG, String.format("Failed to insert tremor data to http request for record (%s, %s, %s)",
-                        tremorRecord.startTimestamp,
-                        tremorRecord.endTimestamp,
-                        tremorRecord.tremorSeverity));
-            }
-        }
-
-        // Request a string response from the provided URL.
-        JsonArrayRequest tremorDataRequest = new JsonArrayRequest(Request.Method.POST,
-                ENDPOINT_URL,
-                payload,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-
-                    }
-                }, new Response.ErrorListener() {
+        tremorMonitorExecutor.execute(new Runnable() {
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void run() {
+                RequestQueue queue = Volley.newRequestQueue(appContext.get());
+                JSONArray payload = new JSONArray();
 
+                // Get all tremor records from database
+                List<TremorRecord> tremorRecords = tremorDatabase.tremorRecordDao().getAll();
+
+                for (TremorRecord tremorRecord : tremorRecords) {
+                    try {
+                        payload.put(tremorRecord.toJSONObject());
+                    } catch (JSONException e) {
+                        Log.d(LOG_TAG, String.format("Failed to insert tremor data to http request for record (%s, %s, %s)",
+                                tremorRecord.startTimestamp,
+                                tremorRecord.endTimestamp,
+                                tremorRecord.tremorSeverity));
+                    }
+                }
+
+                Log.d(LOG_TAG, "Send tremor data with json payload: " + payload.toString());
+
+                // Request a string response from the provided URL.
+                JsonArrayRequest tremorDataRequest = new JsonArrayRequest(Request.Method.POST,
+                        ENDPOINT_URL,
+                        payload,
+                        new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(final JSONArray response) {
+                                tremorMonitorExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.d(LOG_TAG, "Tremor data was successfully sent, response: " + response.toString());
+                                        tremorDatabase.tremorRecordDao().delete();
+                                    }
+                                });
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(final VolleyError error) {
+                        tremorMonitorExecutor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.e(LOG_TAG, "Error when sending tremor data: " + error.toString());
+                            }
+                        });
+                    }
+                });
+
+                queue.add(tremorDataRequest);
             }
         });
-
-        queue.add(tremorDataRequest);
     }
 
     protected void startRepeatingTremorAlarm() {
@@ -163,8 +183,8 @@ public class TremorMonitor implements SensorEventListener {
         tremorDataRequestPendingIntent = PendingIntent.getBroadcast(appContext.get(), 0, tremorDataRequestAlarmIntent, 0);
         alarmManager = (AlarmManager) appContext.get().getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + 10000,
-                10000, tremorDataRequestPendingIntent);
+                SystemClock.elapsedRealtime() + 5000,
+                5000, tremorDataRequestPendingIntent);
     }
 
     private TremorSeverity calculateTremorSeverity(double frequency) {
@@ -216,7 +236,7 @@ public class TremorMonitor implements SensorEventListener {
         }
         monitorIsRunning = true;
 
-        sendTremorData();
+//        sendTremorData();
         startRepeatingTremorAlarm();
 
 //        sensorManager.registerListener(this,
@@ -314,22 +334,22 @@ public class TremorMonitor implements SensorEventListener {
                                                  ArrayList<Double> rotation,
                                                  long startTimestamp,
                                                  long endTimestamp) {
-        Log.d(LOG_TAG, "X gyroscope (" + xRotation.size() + "): " + xRotation.toString());
-        Log.d(LOG_TAG, "Y gyroscope (" + yRotation.size() + "): " + yRotation.toString());
-        Log.d(LOG_TAG, "Z gyroscope (" + zRotation.size() + "): " + zRotation.toString());
-        Log.d(LOG_TAG, "Total rotation (" + rotation.size() + "): " + rotation.toString());
+//        Log.d(LOG_TAG, "X gyroscope (" + xRotation.size() + "): " + xRotation.toString());
+//        Log.d(LOG_TAG, "Y gyroscope (" + yRotation.size() + "): " + yRotation.toString());
+//        Log.d(LOG_TAG, "Z gyroscope (" + zRotation.size() + "): " + zRotation.toString());
+//        Log.d(LOG_TAG, "Total rotation (" + rotation.size() + "): " + rotation.toString());
 
         ArrayList<Double> xRotFiltered = movingAverageFilter(xRotation, MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "X rotation filtered (" + xRotFiltered.size() + "): " + xRotFiltered.toString());
+//        Log.d(LOG_TAG, "X rotation filtered (" + xRotFiltered.size() + "): " + xRotFiltered.toString());
 
         ArrayList<Double> yRotFiltered = movingAverageFilter(yRotation, MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "Y rotation filtered (" + yRotFiltered.size() + "): " + yRotFiltered.toString());
+//        Log.d(LOG_TAG, "Y rotation filtered (" + yRotFiltered.size() + "): " + yRotFiltered.toString());
 
         ArrayList<Double> zRotFiltered = movingAverageFilter(zRotation, MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "Z rotation filtered (" + zRotFiltered.size() + "): " + zRotFiltered.toString());
+//        Log.d(LOG_TAG, "Z rotation filtered (" + zRotFiltered.size() + "): " + zRotFiltered.toString());
 
         ArrayList<Double> rotFiltered = movingAverageFilter(rotation, MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "Gyroscope filtered (" + rotFiltered.size() + "): " + rotFiltered.toString());
+//        Log.d(LOG_TAG, "Gyroscope filtered (" + rotFiltered.size() + "): " + rotFiltered.toString());
 
         FastFourierTransformer fastFourierTransformer = new FastFourierTransformer(DftNormalization.STANDARD);
 
@@ -362,22 +382,22 @@ public class TremorMonitor implements SensorEventListener {
                                                      ArrayList<Double> acceleration,
                                                      long startTimestamp,
                                                      long endTimestamp) {
-        Log.d(LOG_TAG, "X accelerometer (" + xAcceleration.size() + "): " + xAcceleration.toString());
-        Log.d(LOG_TAG, "Y accelerometer (" + yAcceleration.size() + "): " + yAcceleration.toString());
-        Log.d(LOG_TAG, "Z accelerometer (" + zAcceleration.size() + "): " + zAcceleration.toString());
-        Log.d(LOG_TAG, "Total acceleration (" + acceleration.size() + "): " + acceleration.toString());
+//        Log.d(LOG_TAG, "X accelerometer (" + xAcceleration.size() + "): " + xAcceleration.toString());
+//        Log.d(LOG_TAG, "Y accelerometer (" + yAcceleration.size() + "): " + yAcceleration.toString());
+//        Log.d(LOG_TAG, "Z accelerometer (" + zAcceleration.size() + "): " + zAcceleration.toString());
+//        Log.d(LOG_TAG, "Total acceleration (" + acceleration.size() + "): " + acceleration.toString());
 
         ArrayList<Double> xAccFiltered = movingAverageFilter(xAcceleration, MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "X accelerometer filtered (" + xAccFiltered.size() + "): " + xAccFiltered.toString());
+//        Log.d(LOG_TAG, "X accelerometer filtered (" + xAccFiltered.size() + "): " + xAccFiltered.toString());
 
         ArrayList<Double> yAccFiltered = movingAverageFilter(yAcceleration, MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "Y accelerometer filtered (" + yAccFiltered.size() + "): " + yAccFiltered.toString());
+//        Log.d(LOG_TAG, "Y accelerometer filtered (" + yAccFiltered.size() + "): " + yAccFiltered.toString());
 
         ArrayList<Double> zAccFiltered = movingAverageFilter(zAcceleration, MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "Z accelerometer filtered (" + zAccFiltered.size() + "): " + zAccFiltered.toString());
+//        Log.d(LOG_TAG, "Z accelerometer filtered (" + zAccFiltered.size() + "): " + zAccFiltered.toString());
 
         ArrayList<Double> accFiltered = movingAverageFilter(acceleration, MOVING_AVERAGE_FILTER_NUM_POINTS);
-        Log.d(LOG_TAG, "Accelerometer filtered (" + accFiltered.size() + "): " + accFiltered.toString());
+//        Log.d(LOG_TAG, "Accelerometer filtered (" + accFiltered.size() + "): " + accFiltered.toString());
 
         FastFourierTransformer fastFourierTransformer = new FastFourierTransformer(DftNormalization.STANDARD);
 
@@ -389,17 +409,16 @@ public class TremorMonitor implements SensorEventListener {
         Double[] xAcc = xAccFiltered.toArray(new Double[0]);
         Complex[] xAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(xAcc), FFT_SIZE), TransformType.FORWARD);
         double xDominantFrequency = getDominantFrequency(xAccFFT);
+        Log.d(LOG_TAG, "X acc dominant frequency: " + xDominantFrequency);
 
         Double[] yAcc = yAccFiltered.toArray(new Double[0]);
         Complex[] yAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(yAcc), FFT_SIZE), TransformType.FORWARD);
         double yDominantFrequency = getDominantFrequency(yAccFFT);
+        Log.d(LOG_TAG, "Y acc dominant frequency: " + yDominantFrequency);
 
         Double[] zAcc = zAccFiltered.toArray(new Double[0]);
         Complex[] zAccFFT = fastFourierTransformer.transform(Arrays.copyOf(ArrayUtils.toPrimitive(zAcc), FFT_SIZE), TransformType.FORWARD);
         double zDominantFrequency = getDominantFrequency(zAccFFT);
-
-        Log.d(LOG_TAG, "X acc dominant frequency: " + xDominantFrequency);
-        Log.d(LOG_TAG, "Y acc dominant frequency: " + yDominantFrequency);
         Log.d(LOG_TAG, "Z acc dominant frequency: " + zDominantFrequency);
 
 //        return dominantFrequency;

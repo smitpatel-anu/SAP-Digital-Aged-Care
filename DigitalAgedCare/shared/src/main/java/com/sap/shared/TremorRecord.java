@@ -8,7 +8,11 @@ import androidx.room.PrimaryKey;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
+import java.util.TimeZone;
 
 @SuppressWarnings("all")
 @Entity(tableName = "tremor_records")
@@ -90,9 +94,13 @@ public class TremorRecord {
     }
 
     JSONObject toJSONObject() throws JSONException {
+        TimeZone timeZone = TimeZone.getTimeZone("UTC");
+        DateFormat iso8601DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        iso8601DateFormat.setTimeZone(timeZone);
+
         return new JSONObject()
-                .put(JSON_KEY_START_TIMESTAMP, startTimestamp)
-                .put(JSON_KEY_END_TIMESTAMP, endTimestamp)
-                .put(JSON_KEY_TREMOR_SEVERITY, tremorSeverity);
+                .put(JSON_KEY_START_TIMESTAMP, iso8601DateFormat.format(startTimestamp))
+                .put(JSON_KEY_END_TIMESTAMP, iso8601DateFormat.format(endTimestamp))
+                .put(JSON_KEY_TREMOR_SEVERITY, tremorSeverity.ordinal());
     }
 }
