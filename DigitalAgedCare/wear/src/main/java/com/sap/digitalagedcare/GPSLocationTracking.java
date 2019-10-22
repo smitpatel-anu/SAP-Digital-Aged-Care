@@ -74,7 +74,7 @@ public class GPSLocationTracking {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
                 Log.i(TAG, "The Location is: " + location.getLatitude() + " " + location.getLongitude());
-//                sendMessageToActivity(location,context);
+                sendMessageToActivity(location,context);
             }
         }
     };
@@ -86,12 +86,12 @@ public class GPSLocationTracking {
      * @param location
      * @param context
      */
-//    private  void sendMessageToActivity(Location location,Context context) {
-//        Intent intent = new Intent("GPSLocationUpdates");
-//        // Here you can also include some extra data.
-//        Bundle bundle = new Bundle();
-//        bundle.putParcelable("Location", location);
-//        intent.putExtra("Location", bundle);
-//        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-//    }
+    private  void sendMessageToActivity(Location location,Context context) {
+        Intent intent = new Intent("GPSLocationUpdates");
+        // Here you can also include some extra data.
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("Location", location);
+        intent.putExtra("Location", bundle);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
 }

@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-public class FallDetectionActivity extends WearableActivity implements SensorEventListener {
+public class FallDetectionActivity extends WearableActivity implements SensorEventListener{
 
     private SensorManager mySensorManager;
     private Sensor myAccelerometer;
@@ -40,8 +40,7 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
     private boolean bp = true;
     private boolean ff = false;
     public MyLocationService locationService;
-    public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 101;
-    private static Location currentLocation;
+    private static CurrentLocation currentLocation;
 
 
     private final static String TAG = FallDetectionActivity.class.getSimpleName();
@@ -50,6 +49,7 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fall_detection);
+        currentLocation=new CurrentLocation();
 
         final Intent intent = new Intent(this.getApplication(), MyLocationService.class);
         this.getApplication().startService(intent);
@@ -73,7 +73,6 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
         mySensorManager.registerListener(FallDetectionActivity.this, myGyroscope, mySensorManager.SENSOR_DELAY_NORMAL);
         Log.d(TAG, "onCreate: Gyroscope listener is registered.");
 
-
         // Enables Always-on
         setAmbientEnabled();
     }
@@ -92,12 +91,14 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
 
             // record data
 
+
             // free fall event
             if (acc<1f && bp) {
                 ff = true;
                 bp = false;
                 Toast.makeText(FallDetectionActivity.this, R.string.freefall,Toast.LENGTH_SHORT).show();
             }
+
             if (acc>20f && ff){
                 ff = false;
                 openDialog();
@@ -190,8 +191,8 @@ public class FallDetectionActivity extends WearableActivity implements SensorEve
             Bundle b = intent.getBundleExtra("Location");
             Location location = (Location) b.getParcelable("Location");
             if (location != null) {
-                currentLocation = location;
-                Log.i(TAG, "The Location is*:" + location.getLatitude() + " " + location.getLongitude());
+                currentLocation.SetLocation(location);
+                Log.i(TAG, "The Location is*:" + currentLocation.getLatitude() + " " + currentLocation.getLongitude());
             }
         }
     };
