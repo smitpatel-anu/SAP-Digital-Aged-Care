@@ -13,10 +13,13 @@
 * Simon Grace (simon.grace@sap.com)
 * [Stakeholders](https://drive.google.com/open?id=1xcZRBAM8WKJzAdR3uYg2QqyHmTnkFkIPEhA69GL9Yo0)
 
-## Audits Page
-### [Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_1.md)
-### [Audit 2](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_2.md)
-### [Audit 3](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_3.md)
+## Audit Pages 2020 Semester 1
+### [2020 Semester 1 Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_1.md)
+
+## Audit Pages 2019 Semester 2
+### [2019 Semester 2 Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_1.md)
+### [2019 Semester 2 Audit 2](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_2.md)
+### [2019 Semester 2 Audit 3](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/Audit_3.md)
 
 ## Features repo
 ### [Fall Detection](https://github.com/ginpie/Fall-Detection)
