@@ -28,10 +28,10 @@
 ### [GPS Location](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/tree/master/DigitalAgedCare/shared/src/main/java/com/sap/shared)
 
 ## Resources
-### [Google Drive](https://drive.google.com/drive/folders/1zLu37xGUlXDpCMVbtRykj2TJwudNY8HX?usp=sharing)
+### [Google Drive](https://drive.google.com/drive/folders/1Py5jwDYhZiAZ8-BK4W8aeVukFq-CMITV?usp=sharing)
 
 ### [Trello board](https://trello.com/b/QgPn0RdV/sap-digital-aged-care)
 
 ### [Slack workspace](https://tl-s2-2019-aged-care.slack.com/)
 
-### [Slack invite link](https://join.slack.com/t/tl-s2-2019-aged-care/shared_invite/enQtNzA4ODI5OTA4NTUwLTQwN2ZlZTQ0YzA2NjAzODBlZjlmZmRmZmZiMjVjNmUyNjkxZjE0M2I1MGJlZmYyYzBmZjdjZTBiYjk0YmI4OWQ)
+### [Slack invite link](https://join.slack.com/t/tl-s2-2019-aged-care/shared_invite/zt-cibn5b36-psywdKL_tUrYwlxaYe5_Uw)
