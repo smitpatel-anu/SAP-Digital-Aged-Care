@@ -13,6 +13,11 @@
 * Simon Grace (simon.grace@sap.com)
 * [Stakeholders](https://drive.google.com/open?id=1xcZRBAM8WKJzAdR3uYg2QqyHmTnkFkIPEhA69GL9Yo0)
 
+### You can login our workspace on SAP HANA cloud:
+* User name: digit.aged.care@gmail.com
+* Password: Digitalagedcare2020
+* [Click on here](https://account.hanatrial.ondemand.com/cockpit)
+
 ## Audit Pages 2020 Semester 1
 ### [2020 Semester 1 Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/2020_Semester_1_Audit_1.md)
 
