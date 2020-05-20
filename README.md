@@ -28,6 +28,7 @@
 ### [2019 Semester 2 Audit 3](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/2019_Semester_2_Audit_3.md)
 
 ## Features repo
+### [Wound Detection](https://github.com/ginpie/deeplab-wound_detection)
 ### [Fall Detection](https://github.com/ginpie/Fall-Detection)
 ### [Fall Detection using Machine Learning](https://github.com/ginpie/FallDetectionML)
 ### [Parkinson's Tremor Monitoring](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/tree/master/DigitalAgedCare/shared/src/main/java/com/sap/shared)
