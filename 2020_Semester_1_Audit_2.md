@@ -15,6 +15,10 @@
 |Ning Cai|Wound detection, Meeting minutes|
 |Ziang Xu|COVID-19 Geofencing/zoning|
 
+### Client
+* Simon Grace - Team leader (leads the digital aged care project at SAP)
+
+
 ### Progress
 * [Trello board](https://trello.com/b/QgPn0RdV/sap-digital-aged-care)
 
@@ -31,3 +35,8 @@
 * [Risk Register](https://docs.google.com/spreadsheets/d/1l-S6Bfi_nmn-BzmRmwGIXCXc7kfdYBhSrRLf0l5ph9o)
 * [Stakeholder analysis](https://docs.google.com/document/d/1KKCbXlmRqANeF5nK0ampcKbmeOLuNs-HxKmWDvDHlEc)
 * [Meeting minutes](https://drive.google.com/open?id=13yXorngb09WMLNpPO6LDeKyiQXc_V80U)
+
+### Communication
+* Using Slack workspace and Zoom
+* Weekly conference calls with Simon
+* Emails with other SAP Digital Aged Care team members
