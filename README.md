@@ -20,7 +20,7 @@
 
 ## Audit Pages 2020 Semester 1
 ### [2020 Semester 1 Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/2020_Semester_1_Audit_1.md)
-### [2020 Semester 1 Audit 2](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/patch-2/2020_Semester_1_Audit_2.md)
+### [2020 Semester 1 Audit 2](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/2020_Semester_1_Audit_2.md)
 
 ## Audit Pages 2019 Semester 2
 ### [2019 Semester 2 Audit 1](https://gitlab.cecs.anu.edu.au/u6743886/sap-digital-aged-care/blob/master/2019_Semester_2_Audit_1.md)
